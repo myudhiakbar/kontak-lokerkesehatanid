@@ -9,36 +9,60 @@
       rel="stylesheet"
     />
     <style>
+      :root {
+        --primary: #0088cc;
+        --secondary: #3d5a80;
+        --accent: #f27b09;
+        --green: #127720;
+        --brown: #473933;
+        --light-bg: #e0fbfc;
+        --light-text: #293241;
+        --white: #fff;
+      }
+
+      body.dark {
+        --light-bg: #121212;
+        --light-text: #e0e0e0;
+        --white: #1e1e1e;
+      }
+
       body {
         font-family: "Poppins", sans-serif;
         margin: 0;
-        background: #e0fbfc;
-        color: #293241;
+        background: var(--light-bg);
+        color: var(--light-text);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        transition: background 0.3s, color 0.3s;
       }
+
       header {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         text-align: center;
         padding: 40px 20px;
-        background: #e0fbfc
+        background: var(--light-bg)
           url("https://elementor.merchant.id/wp-content/uploads/1886/2024/06/OrnamentBG_01.png")
           no-repeat top right;
       }
+
       header img {
         width: 200px;
         max-width: 80%;
         height: auto;
         border-radius: 15px;
-        box-shadow: 5px 5px 0 #fca311;
+        box-shadow: 5px 5px 0 var(--accent);
       }
+
       header h1 {
         color: #3d5a80;
         font-size: 2rem;
         font-weight: 800;
         margin: 15px 0 5px;
       }
+
       header p {
         font-family: Lato, sans-serif;
         font-size: 1.2rem;
@@ -129,6 +153,30 @@
         text-decoration: none;
       }
 
+      /* Tombol dark mode */
+      .dark-toggle {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        background: var(--white);
+        color: var(--secondary);
+        border: none;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        cursor: pointer;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        transition: background 0.3s, transform 0.2s;
+        z-index: 1000;
+      }
+      .dark-toggle:hover {
+        transform: scale(1.1);
+      }
+
       /* Responsive */
       @media (max-width: 768px) {
         header img {
@@ -147,7 +195,7 @@
       }
       @media (max-width: 480px) {
         header img {
-          width: 150px;
+          width: 100px;
         }
         header h1 {
           font-size: 1.4rem;
@@ -160,6 +208,11 @@
     </style>
   </head>
   <body>
+    <!-- Tombol Toggle Dark Mode -->
+    <button class="dark-toggle" id="darkToggle">
+      <i class="fas fa-moon"></i>
+    </button>
+
     <header>
       <img
         src="https://elementor.merchant.id/wp-content/uploads/1886/2025/02/Lokerkesehatanid-400px_ee0kys.png"
@@ -226,7 +279,6 @@
       ></a>
     </div>
     <br />
-    <br />
 
     <!-- Footer -->
     <footer>
@@ -240,6 +292,25 @@
 
     <script>
       document.getElementById("year").textContent = new Date().getFullYear();
+
+      // Dark mode toggle
+      const toggleBtn = document.getElementById("darkToggle");
+      const body = document.body;
+
+      // Load preference
+      if (localStorage.getItem("darkMode") === "true") {
+        body.classList.add("dark");
+        toggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+      }
+
+      toggleBtn.addEventListener("click", () => {
+        body.classList.toggle("dark");
+        const isDark = body.classList.contains("dark");
+        localStorage.setItem("darkMode", isDark);
+        toggleBtn.innerHTML = isDark
+          ? '<i class="fas fa-sun"></i>'
+          : '<i class="fas fa-moon"></i>';
+      });
     </script>
     <br />
     <br />
