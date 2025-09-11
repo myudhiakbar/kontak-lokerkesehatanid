@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loker Kesehatan ID</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        background: #e0fbfc;
+        color: #293241;
+      }
+      header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 20px;
+        background: #e0fbfc
+          url("https://elementor.merchant.id/wp-content/uploads/1886/2024/06/OrnamentBG_01.png")
+          no-repeat top right;
+      }
+      header img {
+        width: 200px;
+        max-width: 80%;
+        height: auto;
+        border-radius: 15px;
+        box-shadow: 5px 5px 0 #fca311;
+      }
+      header h1 {
+        color: #3d5a80;
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 15px 0 5px;
+      }
+      header p {
+        font-family: Lato, sans-serif;
+        font-size: 1.2rem;
+        margin: 0;
+      }
+
+      /* Tombol */
+      .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 80%;
+        max-width: 450px;
+        margin: 12px auto;
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: transform 0.2s, background 0.2s;
+      }
+      .btn:hover {
+        transform: scale(1.05);
+      }
+
+      /* warna tombol */
+      .btn-telegram {
+        background: #0088cc;
+        color: #fff;
+      }
+      .btn-orange {
+        background: #f27b09;
+        color: #fff;
+      }
+      .btn-blue {
+        background: #1d559d;
+        color: #fff;
+      }
+      .btn-white {
+        background: #fff;
+        color: #3d5a80;
+        border: 1px solid #ddd;
+      }
+      .btn-green {
+        background: #127720;
+        color: #fff;
+      }
+      .btn-brown {
+        background: #473933;
+        color: #fff;
+      }
+
+      /* Social Media */
+      .socials {
+        margin: 25px 0;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+      .socials a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+        border-radius: 50%;
+        background: #fff;
+        color: #3d5a80;
+        transition: transform 0.2s, background 0.2s;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      }
+      .socials a:hover {
+        transform: scale(1.15);
+        background: #f0f0f0;
+      }
+
+      footer {
+        margin-top: 20px;
+        padding: 15px;
+        font-size: 14px;
+        text-align: center;
+      }
+      footer a {
+        color: blue;
+        text-decoration: none;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        header img {
+          width: 150px;
+        }
+        header h1 {
+          font-size: 1.6rem;
+        }
+        header p {
+          font-size: 1rem;
+        }
+        .btn {
+          font-size: 0.9rem;
+          padding: 12px;
+        }
+      }
+      @media (max-width: 480px) {
+        header img {
+          width: 150px;
+        }
+        header h1 {
+          font-size: 1.4rem;
+        }
+        .btn {
+          width: 90%;
+          font-size: 0.85rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <img
+        src="https://elementor.merchant.id/wp-content/uploads/1886/2025/02/Lokerkesehatanid-400px_ee0kys.png"
+        alt="Logo Loker Kesehatan ID"
+      />
+      <h1>Loker Kesehatan ID</h1>
+      <p>Keep in touch with us</p>
+    </header>
+
+    <!-- Tombol -->
+    <div class="btn-grid">
+      <!-- <a href="https://3pkita.page.link/ig-lokekesehatanid" class="btn btn-orange"><i class="fas fa-link"></i> Loker Minggu Ini</a>
+    <a href="http://jobstreet.co.id/loker-kesehatan" class="btn btn-blue"><i class="fas fa-link"></i> Jobstreet</a>
+    <a href="https://jalancuan.com/wa-admin-lokerkesehatanid/" class="btn btn-white"><i class="fab fa-whatsapp"></i> Chat Admin</a> -->
+      <a href="https://forms.gle/Aveuj6za1tsqf7R97" class="btn btn-orange"
+        ><i class="fab fa-whatsapp"></i> Chat Whatsapp Admin</a
+      >
+      <a
+        href="https://docs.google.com/document/d/1d8Uaxy9Cm52oujKp32YvUrZnWBGs-6bTS7OLCdNC3zE/mobilebasic"
+        class="btn btn-green"
+        ><i class="fab fa-whatsapp"></i> Chat Whatsapp Info Posting Iklan</a
+      >
+      <a href="https://ig.me/j/Aba_JM6kw-siO9nJ/" class="btn btn-white"
+        ><i class="fab fa-instagram"></i> Update SKP Kemenkes</a
+      >
+      <!-- <a href="https://loker-kesehatan.my.id/" class="btn btn-white"><i class="fas fa-home"></i> Kunjungi Website</a> -->
+      <!-- <a href="https://landingpro.id/link-loker-lainnya" class="btn btn-white"><i class="fas fa-search"></i> Link Lainnya</a> -->
+      <a href="https://t.me/lokerkesehatanchannel" class="btn btn-telegram"
+        ><i class="fab fa-telegram"></i> Gabung Telegram Channel Disini</a
+      >
+      <a href="https://ig.me/j/AbZdbtLrucnVaAjH/" class="btn btn-white"
+        ><i class="fab fa-instagram"></i> IG Channel : Update Loker Nakes/
+        Named</a
+      >
+      <!-- <a href="https://jalancuan.com/cvpremium" class="btn btn-white"><i class="fas fa-user-edit"></i> CV Premium</a> -->
+      <a href="https://forms.gle/tD2LFSfknDKxUWW39" class="btn btn-brown"
+        ><i class="far fa-file-alt"></i> 1. Contoh CV Buat Kamu (GRATIS)</a
+      >
+      <a href="https://jagobikincv.com/afl/5HRZDF" class="btn btn-white"
+        ><i class="far fa-file-word"></i> 2. Template CV dari JagoBikinCV</a
+      >
+      <a href="https://collshp.com/dyanapr" class="btn btn-white"
+        ><i class="fas fa-shopping-bag"></i> 3. Rekomendasi Barang Shopee</a
+      >
+      <!-- <a href="https://sites.google.com/view/kontak-lokerkesehatanid/desain-template-ppt" class="btn btn-white"><i class="far fa-file-powerpoint"></i> Template PPT Gratis</a> -->
+    </div>
+    <br />
+    <br />
+
+    <!-- Social Icons -->
+    <div class="socials">
+      <a href="https://www.facebook.com/lokerkesehatanid"
+        ><i class="fab fa-facebook-f"></i
+      ></a>
+      <a href="https://twitter.com/loker_kesehatan"
+        ><i class="fab fa-twitter"></i
+      ></a>
+      <a
+        href="https://www.youtube.com/channel/UCgb-1Y2Uy8W2QwyoqpxhiFw?sub_confirmation=1"
+        ><i class="fab fa-youtube"></i
+      ></a>
+      <a href="https://www.instagram.com/lokerkesehatanid"
+        ><i class="fab fa-instagram"></i
+      ></a>
+    </div>
+    <br />
+    <br />
+
+    <!-- Footer -->
+    <footer>
+      <div>
+        <a href="https://jalancuan.com/kontak-lokerkesehatanid/"
+          >Loker Kesehatan ID</a
+        >
+        © 2018 - <span id="year"></span>
+      </div>
+    </footer>
+
+    <script>
+      document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
+    <br />
+    <br />
+  </body>
+</html>
