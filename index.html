@@ -63,7 +63,6 @@
     }
 
     header h1 {
-        color: var(--secondary);
         font-size: 1.8em;
         font-weight: 800;
         margin: 15px 0 5px;
@@ -303,10 +302,11 @@
             }
         }
 
-        // === Tambahkan sponsor saat user klik link di #linksContainer
-        document.getElementById("linksContainer").addEventListener("click", (e) => {
-            const target = e.target.closest("a");
-            if (target) {
+        // === Tambahkan sponsor saat user klik link a href
+        document.body.addEventListener("click", (e) => {
+            const inLinksContainer = e.target.closest("#linksContainer a");
+            const inSocials = e.target.closest(".socials a");
+            if (inLinksContainer || inSocials) {
                 tryOpenSponsor();
             }
         });
