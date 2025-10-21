@@ -170,7 +170,8 @@
   }
 
   /* Responsive */
-  @media (min-width: 769px) and (max-width: 1024px) {
+  /* Tablet */
+  @media (min-width: 768px) and (max-width: 1024px) {
       header h1 {
           font-size: 1.4em;
       }
@@ -186,8 +187,9 @@
           width: 90%;
       }
   }
-    
-  @media (max-width: 768px) {
+
+  /* Mobile */
+  @media (max-width: 767px) {
       header h1 { 
           font-size: 1.4em; 
       }
@@ -202,4 +204,5 @@
           font-size: 1em;
           width: 90%;
       }
+
   }
