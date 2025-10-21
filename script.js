@@ -1,4 +1,38 @@
-  
+
+  window.addEventListener("load", () => {
+    const AGREEMENT_KEY = "adsAgreementTimestamp";
+    const ONE_DAY_MS = 1* 60 * 60* 1000; // 1 jam dalam milidetik
+    const lastAgree = localStorage.getItem(AGREEMENT_KEY);
+    const now = Date.now();
+
+  // Fungsi untuk menampilkan popup konfirmasi
+  function showAgreementPopup() {
+      Swal.fire({
+        title: "Info Penting!",
+        text: "Website ini mengandung tautan iklan sponsor. Klik OK untuk melanjutkan",
+        icon: "warning",
+        showCancelButton: false,
+        confirmButtonText: "OK, saya 	setuju",
+        cancelButtonText: "Keluar",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Simpan waktu setuju (timestamp)
+          localStorage.setItem(AGREEMENT_KEY, now.toString());
+        } else {
+          // Jika user tidak setuju, alihkan keluar
+          window.location.href = "*";
+        }
+      });
+    }
+
+  // Cek apakah sudah pernah setuju dalam 24 jam terakhir
+  if (!lastAgree || now - Number(lastAgree) > ONE_DAY_MS) {
+      showAgreementPopup();
+    }
+  });
+
   document.getElementById("year").textContent = new Date().getFullYear();
 
   // Dark Mode
@@ -63,7 +97,7 @@
       "https://s.shopee.co.id/30fRTFltLp"
   ];
 
-  const cooldown = 60000; // jeda 60 detik
+  const cooldown = 5 * 60 * 1000; // jeda 5 menit dalam milidetik
 
   function getRandomSponsor() {
       const index = Math.floor(Math.random() * sponsorUrls.length);
@@ -83,8 +117,9 @@
   // === Tambahkan sponsor saat user klik link a href
   document.body.addEventListener("click", (e) => {
       const inLinksContainer = e.target.closest("#linksContainer a");
-      const inSocials = e.target.closest(".socials a");
+      //const inSocials = e.target.closest(".socials a");
       if (inLinksContainer || inSocials) {
           tryOpenSponsor();
       }
+
   });
