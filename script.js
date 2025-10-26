@@ -8,10 +8,10 @@
   function showAgreementPopup() {
       Swal.fire({
         title: "Info Penting!",
-        text: "Website ini mengandung link iklan shopee affiliate. Link akan redirect 1 kali saat klik tombol dan akan delay 5 menit tanpa iklan. Apakah anda dengan iklan yang akan muncul di website ini?",
+        text: "Website ini mengandung link iklan shopee affiliate. Link akan redirect 1 kali saat klik tombol dan akan delay 5 menit tanpa iklan. Apakah anda setuju dengan iklan yang akan muncul di website ini?",
         input: "checkbox",
         inputValue: 0,
-        inputPlaceholder: "ya, saya setuju min",
+        inputPlaceholder: "Ya, saya setuju min",
         icon: "question",
         showCancelButton: false,
         confirmButtonText: "OK, lanjutkan",
@@ -132,3 +132,4 @@
           tryOpenSponsor();
       }
   });
+
