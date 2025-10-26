@@ -1,7 +1,6 @@
-
   window.addEventListener("load", () => {
     const AGREEMENT_KEY = "adsAgreementTimestamp";
-    const ONE_DAY_MS = 1* 60 * 60* 1000; // 1 jam dalam milidetik
+    const ONE_DAY_MS = 1 * 60 * 60 * 1000; // 1 jam dalam milidetik
     const lastAgree = localStorage.getItem(AGREEMENT_KEY);
     const now = Date.now();
 
@@ -9,13 +8,19 @@
   function showAgreementPopup() {
       Swal.fire({
         title: "Info Penting!",
-        text: "Website ini mengandung tautan iklan sponsor. Klik OK untuk melanjutkan",
-        icon: "warning",
+        text: "Website ini mengandung link iklan shopee affiliate. Link akan redirect 1 kali saat klik tombol dan akan delay 5 menit tanpa iklan. Apakah anda dengan iklan yang akan muncul di website ini?",
+        input: "checkbox",
+        inputValue: 0,
+        inputPlaceholder: "ya, saya setuju min",
+        icon: "question",
         showCancelButton: false,
-        confirmButtonText: "OK, saya 	setuju",
+        confirmButtonText: "OK, lanjutkan",
         cancelButtonText: "Keluar",
         allowOutsideClick: false,
         allowEscapeKey: false,
+        inputValidator: (value) => {
+            return !value && "Kamu harus checklist setuju dulu ya!";
+        }
       }).then((result) => {
         if (result.isConfirmed) {
           // Simpan waktu setuju (timestamp)
@@ -91,35 +96,39 @@
   // Daftar link sponsor (putar/acak)
   const sponsorUrls = [
       "https://s.shopee.co.id/6AcTEtdjIz",
+      "https://s.shopee.co.id/5pzcqLYhyV",
       "https://s.shopee.co.id/40Xyf11I5q",
       "https://s.shopee.co.id/AKS2ChKiHa",
-      "https://s.shopee.co.id/5pzcqLYhyV",
       "https://s.shopee.co.id/30fRTFltLp"
   ];
 
-  const cooldown = 5 * 60 * 1000; // jeda 5 menit dalam milidetik
+  const cooldown = 5 * 60 * 1000; // 5 menit dalam milidetik
+  const INDEX_KEY = "sponsor-index";
+  const LAST_OPEN_KEY = "directlink-last-time";
 
-  function getRandomSponsor() {
-      const index = Math.floor(Math.random() * sponsorUrls.length);
-      return sponsorUrls[index];
-  }
+  function getNextSponsor() {
+        let index = Number(localStorage.getItem(INDEX_KEY) || 0);
+        const sponsor = sponsorUrls[index];
+        // increment & wrap around
+        index = (index + 1) % sponsorUrls.length;
+        localStorage.setItem(INDEX_KEY, index);
+        return sponsor;
+    }
 
   function tryOpenSponsor() {
-      const last = Number(localStorage.getItem("directlink-last-time") || 0);
-      const now = Date.now();
-      if (!last || (now - last) > cooldown) {
-          localStorage.setItem("directlink-last-time", now);
-          const sponsorUrl = getRandomSponsor();
-          window.open(sponsorUrl, "_blank");
-      }
-  }
+        const last = Number(localStorage.getItem(LAST_OPEN_KEY) || 0);
+        const now = Date.now();
+        if (!last || now - last > cooldown) {
+            localStorage.setItem(LAST_OPEN_KEY, now);
+            const sponsorUrl = getNextSponsor();
+            window.open(sponsorUrl, "_blank");
+        }
+    }
 
   // === Tambahkan sponsor saat user klik link a href
   document.body.addEventListener("click", (e) => {
       const inLinksContainer = e.target.closest("#linksContainer a");
-      //const inSocials = e.target.closest(".socials a");
-      if (inLinksContainer || inSocials) {
+      if (inLinksContainer) {
           tryOpenSponsor();
       }
-
   });
