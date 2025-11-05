@@ -20,7 +20,8 @@
         allowEscapeKey: false,
         inputValidator: (value) => {
             return !value && "Kamu harus checklist setuju dulu ya!";
-        }
+        },
+        hideClass: { popup: 'animate__animated animate__zoomOut' }
       }).then((result) => {
         if (result.isConfirmed) {
           // Simpan waktu setuju (timestamp)
@@ -132,5 +133,6 @@
           tryOpenSponsor();
       }
   });
+
 
 
