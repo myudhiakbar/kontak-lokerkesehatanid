@@ -1,6 +1,6 @@
   window.addEventListener("load", () => {
     const AGREEMENT_KEY = "adsAgreementTimestamp";
-    const ONE_DAY_MS = 1 * 60 * 60 * 1000; // 1 jam dalam milidetik
+    const ONE_DAY_MS = 24 * 60 * 60 * 1000; // 24 jam dalam milidetik
     const lastAgree = localStorage.getItem(AGREEMENT_KEY);
     const now = Date.now();
 
@@ -103,7 +103,7 @@
       "https://s.shopee.co.id/30fRTFltLp"
   ];
 
-  const cooldown = 5 * 60 * 1000; // 5 menit dalam milidetik
+  const cooldown = 12 * 60 * 60 * 1000; // 12 jam dalam milidetik
   const INDEX_KEY = "sponsor-index";
   const LAST_OPEN_KEY = "directlink-last-time";
 
@@ -133,6 +133,7 @@
           tryOpenSponsor();
       }
   });
+
 
 
 
