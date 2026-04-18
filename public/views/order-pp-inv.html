@@ -44,7 +44,8 @@
 
         <!-- DROPZONE -->
         <div class="mb-3">
-          <label class="form-label">Upload Bukti Transfer (JPEG/PNG) <span class="text-danger">* (Max file size: 2MB)</span></label>
+          <label class="form-label">Upload Bukti Transfer (JPEG/PNG) <span class="text-danger">* (Max file size:
+              2MB)</span></label>
 
           <div class="dropzone-upload" id="dropzoneBukti">
             <div class="dropzone-icon">📤</div>
@@ -274,11 +275,21 @@
         // Jika sukses
         if (result.result === "success") {
           const fileUrl = result.fileUrl || "-";
+          const tanggalOrder = new Date();
+          const tanggalLengkap = tanggalOrder.toLocaleString('id-ID', {
+            timeZone: 'Asia/Jakarta',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }).replace(/\./g, ':') + ' WIB';
 
           const pesan = `Halo min, saya sudah transfer untuk iklan
 - Nama: ${data.nama}
 - No Invoice: ${data.invoice}
 - Produk: ${data.produk}
+- Tanggal Order: ${tanggalLengkap}
 - Nama Rek: ${data.namaRek}
 - Bukti: ${fileUrl}`;
 

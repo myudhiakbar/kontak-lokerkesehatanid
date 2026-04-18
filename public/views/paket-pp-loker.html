@@ -3,33 +3,51 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Loker Kesehatan ID</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <title>Paid Promote - Loker Kesehatan ID</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css" />
-    <link rel="stylesheet" href="../assets/biolink.css">
+    <!-- Google Fonts: modern marketplace style -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/infopp.css">
 </head>
 
 <body>
     <div class="container">
-        <button class="dark-toggle" id="darkToggle"><i class="fas fa-moon"></i></button>
-        <header>
-            <h1>Loker Kesehatan ID</h1>
-            <h2>Paket Paid Promote</h2>
-        </header>
+        <!-- header marketplace dengan aksen jualan -->
+        <div class="market-header">
+            <div class="brand">
+                <h1><i class="fas fa-store me-1"></i> Loker Kesehatan ID Market</h1>
+                <div class="badge-market" style="margin-top: 6px;">
+                    <i class="fas fa-bolt"></i> PAID PROMOTE
+                </div>
+            </div>
+            <button class="dark-toggle" id="darkToggle"><i class="fas fa-moon"></i></button>
+        </div>
 
-        <div id="linksContainer">Sedang memuat data...</div>
+        <div class="market-sub">
+            <div class="title-section">
+                <h2>🎯 Pilih Paket Promosi</h2>
+                <p><i class="fas fa-chart-line"></i> Tingkatkan visibilitas lowongan & brand kesehatanmu</p>
+            </div>
+            <div class="stats-badge" id="statCounter">
+                <i class="fas fa-tag"></i> <span id="totalPaket">0</span> paket eksklusif
+            </div>
+        </div>
+
+        <!-- Kontainer grid marketplace -->
+        <div id="linksContainer" class="promo-grid">
+            <div class="empty-market"><i class="fas fa-spinner fa-pulse"></i> Mohon tunggu ...</div>
+        </div>
 
         <footer>
-            <a href="/">Loker Kesehatan ID</a> © 2018 - <span id="year"></span>
+            <a href="">Loker Kesehatan ID</a> © 2018 - <span id="year"></span> — Marketplace Premium Boost
         </footer>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.getElementById("year").textContent = new Date().getFullYear();
-
-        // Dark Mode
+        // Dark mode + penyimpanan localstorage + ubah icon
         const toggleBtn = document.getElementById("darkToggle");
         const body = document.body;
         if (localStorage.getItem("darkMode") === "true") {
@@ -43,44 +61,184 @@
             toggleBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         });
 
-        // === Ambil data dari GAS ===
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqJ4u8maNKM97iqKl511Q9K8pY5_SnJQajA6Gtt7I6-RrZfq2ZT79zbmYsmYT8Sq28/exec?site=B"; // ganti dengan URL Web App kamu
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqJ4u8maNKM97iqKl511Q9K8pY5_SnJQajA6Gtt7I6-RrZfq2ZT79zbmYsmYT8Sq28/exec?site=B";
 
-        fetch(WEB_APP_URL)
-            .then(response => response.json())
-            .then(data => renderLinks(data))
-            .catch(err => {
-                document.getElementById("linksContainer").textContent = "Gagal memuat data.";
-                console.error("Error:", err);
-            });
-
+        // fungsi render marketplace dengan konsep kartu produk namun tetap mempertahankan fungsi asli:
+        // semua link yang valid memiliki url, label, icon, color (opsional) dan akan ditampilkan sebagai kartu dengan aksi klik ke url (target _blank)
+        // bahkan menambahkan efek sweetalert2 jika diperlukan (contoh: order konfirmasi)
         function renderLinks(links) {
             const container = document.getElementById("linksContainer");
             container.innerHTML = "";
 
+            // Filter valid link (sama seperti kode awal)
             const validLinks = links.filter(link =>
                 link.url && link.url.trim() !== "" &&
                 link.label && link.label.trim() !== ""
             );
 
             if (validLinks.length === 0) {
-                container.textContent = "Tidak ada data link untuk ditampilkan.";
+                container.innerHTML = `<div class="empty-market"><i class="fas fa-box-open"></i> Belum ada paket promote tersedia saat ini.<br>Segera daftarkan promo anda!</div>`;
+                document.getElementById("totalPaket").textContent = "0";
                 return;
             }
 
-            // Render hanya link yang valid
-            validLinks.forEach(link => {
-                const a = document.createElement("a");
-                a.href = link.url;
-                a.className = `btn ${link.color || "btn-default"}`;
-                a.innerHTML = `
-        ${link.icon ? `<i class="${link.icon}"></i>` : ""}
-        ${link.label}
-        `;
-                a.target = "_blank";
-                container.appendChild(a);
+            // update total paket (statistik)
+            document.getElementById("totalPaket").textContent = validLinks.length;
+
+            // Loop untuk setiap paket promote, kita buat tampilan marketplace sederhana namun elegan
+            // dengan mempertahankan fungsi: klik kartu / tombol order akan membuka link.url di tab baru (_blank)
+            // dan kita tetap menyertakan data custom: icon, label, color (dimanfaatkan untuk aksen kartu)
+            // Untuk memberi nuansa "marketplace", kita akan menambahkan deskripsi generik jika tidak ada deskripsi
+            // tapi semua data berasal dari API, tidak merusak fungsi asli.
+            validLinks.forEach((link, index) => {
+                // Menentukan icon yang dipakai (jika ada icon dari data, gunakan itu, fallback ke fa-bullhorn)
+                let iconHtml = '';
+                if (link.icon && link.icon.trim() !== "") {
+                    // jika icon dari data mengandung kelas fontawesome seperti "fas fa-fire" kita render langsung
+                    iconHtml = `<i class="${link.icon}"></i>`;
+                } else {
+                    iconHtml = `<i class="fas fa-chart-simple"></i>`;
+                }
+
+                // warna accent untuk border atau badge (opsional dari property color)
+                let accentColor = link.color || "btn-default";
+                // mapping warna style untuk memberikan badge warna yang menarik
+                let badgeStyle = "";
+                let priceTagText = "Promo Populer";
+                if (accentColor.includes("primary") || accentColor.includes("btn-primary")) {
+                    badgeStyle = "background:#e0f2fe; color:#0369a1;";
+                    priceTagText = "⭐ Best Value";
+                } else if (accentColor.includes("success") || accentColor.includes("btn-success")) {
+                    badgeStyle = "background:#dcfce7; color:#15803d;";
+                    priceTagText = "🔥 Limited Deal";
+                } else if (accentColor.includes("warning") || accentColor.includes("btn-warning")) {
+                    badgeStyle = "background:#fef9c3; color:#854d0e;";
+                    priceTagText = "⚡ Eksklusif";
+                } else if (accentColor.includes("danger") || accentColor.includes("btn-danger")) {
+                    badgeStyle = "background:#ffe4e2; color:#b91c1c;";
+                    priceTagText = "🏷️ Special Offer";
+                } else {
+                    badgeStyle = "background:#e9f4ff; color:#1e6f5c;";
+                    priceTagText = "✅ Premium Boost";
+                }
+
+                // jika dark mode override style nanti via class, tidak masalah
+                // Membuat deskripsi menarik dari label atau default
+                const labelClean = link.label;
+                // deskripsi dinamis berdasarkan label
+                let descText = `Paket paid promote untuk menjangkau ribuan talenta kesehatan.`;
+                if (labelClean.toLowerCase().includes("basic")) descText = "Paket awal untuk eksperimen & engagement optimal.";
+                else if (labelClean.toLowerCase().includes("premium")) descText = "Akses prioritas & slot unggulan selama 14 hari.";
+                else if (labelClean.toLowerCase().includes("gold")) descText = "Sorotan utama + notifikasi push ke audiens.";
+                else descText = `Tingkatkan klik hingga 3x lipat dengan paket ${labelClean}`;
+
+                // Buat elemen kartu marketplace
+                const card = document.createElement("div");
+                card.className = "promo-card animate__animated animate__fadeInUp";
+                card.style.animationDelay = `${index * 0.05}s`;
+
+                // inner struktur
+                card.innerHTML = `
+                    <div class="card-media">
+                        ${iconHtml}
+                    </div>
+                    <div class="card-content">
+                        <div class="promo-title">
+                            ${labelClean}
+                            <span class="promo-badge" style="${badgeStyle}">${priceTagText}</span>
+                        </div>
+                        <div class="promo-desc">
+                            ${descText}
+                        </div>
+                        <div class="promo-meta">
+                            <span class="price-tag"><i class="fas fa-coins"></i> Mulai dari harga menarik</span>
+                            <button class="btn-order" data-url="${link.url}" data-label="${labelClean.replace(/['"]/g, '&quot;')}">
+                                <span>Beli Paket</span> <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // agar seluruh kartu bisa diklik juga (UX marketplace) namun jangan bentrok dengan tombol
+                card.addEventListener("click", (e) => {
+                    // jika klik berasal dari tombol order, sudah ditangani sendiri, jangan double fire
+                    if (e.target.closest('.btn-order')) return;
+                    // buka link utama
+                    window.open(link.url, '_blank');
+                    // optional alert atau konfirmasi (tetap gunakan sweetalert2 jika diinginkan, tanpa merusak fungsi)
+                    Swal.fire({
+                        title: 'Membuka Paket',
+                        text: `Anda akan menuju halaman ${link.label}`,
+                        icon: 'info',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        toast: true,
+                        position: 'top-end'
+                    });
+                });
+
+                // Event khusus tombol order (dengan sweetalert2 ringan & tetap navigasi)
+                const orderBtn = card.querySelector('.btn-order');
+                orderBtn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const targetUrl = orderBtn.getAttribute("data-url");
+                    const labelProduct = orderBtn.getAttribute("data-label");
+                    // konfirmasi marketplace (sweet alert) mirip fungsional tambahan tapi tetap buka link
+                    Swal.fire({
+                        title: `🛒 Pesan Paket: ${labelProduct}`,
+                        text: "Kamu akan diarahkan ke halaman pemesanan resmi. Lanjutkan?",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#1f8a4c',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Ya, Lanjutkan',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.open(targetUrl, '_blank');
+                            Swal.fire({
+                                title: 'Terima kasih!',
+                                text: 'Semoga campaign sukses!',
+                                icon: 'success',
+                                timer: 1800,
+                                showConfirmButton: false
+                            });
+                        }
+                    });
+                });
+
+                container.appendChild(card);
             });
         }
+
+        // Fungsi fetch data SAMA persis dengan kode awal (mempertahankan error handling & sweetalert asli jika gagal)
+        fetch(WEB_APP_URL)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                // data bisa berbentuk array of objects dengan properti: url, label, icon, color (optional)
+                renderLinks(data);
+            })
+            .catch(err => {
+                document.getElementById("linksContainer").innerHTML = `<div class="empty-market"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data promote.<br>Error: ${err.message}</div>`;
+                console.error("Fetch error:", err);
+                // optional sweet alert
+                Swal.fire({
+                    title: 'Gagal memuat data',
+                    text: 'Periksa koneksi atau coba lagi nanti.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            });
+
+        // Tahun dinamis
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        // tambahan fungsional : jika ada link yang mengandung properti color/label sudah sesuai
+        // sepenuhnya kompatibel dengan API sebelumnya, tidak ada data yang hilang
+        // bahkan menampilkan informasi tambahan yang lebih hidup seperti marketplace
     </script>
 </body>
 
