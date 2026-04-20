@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4/animate.min.css" />
     <!-- Google Fonts: modern marketplace style -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap"
+        rel="stylesheet" />
     <link rel="stylesheet" href="../assets/paket-pp-loker.css">
 </head>
 
@@ -63,7 +65,6 @@
 
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqJ4u8maNKM97iqKl511Q9K8pY5_SnJQajA6Gtt7I6-RrZfq2ZT79zbmYsmYT8Sq28/exec?site=B";
 
-        // fungsi render marketplace dengan konsep kartu produk namun tetap mempertahankan fungsi asli:
         // semua link yang valid memiliki url, label, icon, color (opsional) dan akan ditampilkan sebagai kartu dengan aksi klik ke url (target _blank)
         // bahkan menambahkan efek sweetalert2 jika diperlukan (contoh: order konfirmasi)
         function renderLinks(links) {
@@ -77,7 +78,7 @@
             );
 
             if (validLinks.length === 0) {
-                container.innerHTML = `<div class="empty-market"><i class="fas fa-box-open"></i> Belum ada paket promote tersedia saat ini.<br>Segera daftarkan promo anda!</div>`;
+                container.innerHTML = `<div class="empty-market"><i class="fas fa-box-open"></i> Belum ada paket promote tersedia saat ini</div>`;
                 document.getElementById("totalPaket").textContent = "0";
                 return;
             }
@@ -85,11 +86,6 @@
             // update total paket (statistik)
             document.getElementById("totalPaket").textContent = validLinks.length;
 
-            // Loop untuk setiap paket promote, kita buat tampilan marketplace sederhana namun elegan
-            // dengan mempertahankan fungsi: klik kartu / tombol order akan membuka link.url di tab baru (_blank)
-            // dan kita tetap menyertakan data custom: icon, label, color (dimanfaatkan untuk aksen kartu)
-            // Untuk memberi nuansa "marketplace", kita akan menambahkan deskripsi generik jika tidak ada deskripsi
-            // tapi semua data berasal dari API, tidak merusak fungsi asli.
             validLinks.forEach((link, index) => {
                 // Menentukan icon yang dipakai (jika ada icon dari data, gunakan itu, fallback ke fa-bullhorn)
                 let iconHtml = '';
@@ -100,7 +96,25 @@
                     iconHtml = `<i class="fas fa-chart-simple"></i>`;
                 }
 
-                // warna accent untuk border atau badge (opsional dari property color)
+                // AMBIL DATA HARGA DARI GAS
+                let rawPrice = null;
+                if (link.harga !== undefined && link.harga !== null && link.harga !== "") rawPrice = link.harga;
+
+                let formattedPrice = "";
+                if (rawPrice !== null && rawPrice !== "") {
+                    // Cek apakah rawPrice adalah angka atau string numeric
+                    let numericPrice = parseFloat(rawPrice.toString().replace(/[^0-9,-]/g, '').replace(',', '.'));
+                    if (!isNaN(numericPrice) && isFinite(numericPrice)) {
+                        formattedPrice = `Harga Rp ${numericPrice.toLocaleString('id-ID')}`;
+                    } else {
+                        // Jika bukan angka murni, tampilkan teks asli
+                        formattedPrice = rawPrice.toString();
+                        // pastikan tidak terlalu panjang
+                        if (formattedPrice.length > 35) formattedPrice = formattedPrice.substring(0, 32) + '...';
+                    }
+                }
+
+                // warna accent untuk border atau badge
                 let accentColor = link.color || "btn-default";
                 // mapping warna style untuk memberikan badge warna yang menarik
                 let badgeStyle = "";
@@ -122,15 +136,10 @@
                     priceTagText = "✅ Premium Boost";
                 }
 
-                // jika dark mode override style nanti via class, tidak masalah
-                // Membuat deskripsi menarik dari label atau default
+                // Membuat deskripsi menarik dari label 
                 const labelClean = link.label;
-                // deskripsi dinamis berdasarkan label
                 let descText = `Paket paid promote untuk menjangkau ribuan talenta kesehatan.`;
-                if (labelClean.toLowerCase().includes("basic")) descText = "Paket awal untuk eksperimen & engagement optimal.";
-                else if (labelClean.toLowerCase().includes("premium")) descText = "Akses prioritas & slot unggulan selama 14 hari.";
-                else if (labelClean.toLowerCase().includes("gold")) descText = "Sorotan utama + notifikasi push ke audiens.";
-                else descText = `Tingkatkan klik hingga 3x lipat dengan paket ${labelClean}`;
+                descText = `Tingkatkan klik hingga 3x lipat dengan paket ${labelClean}`;
 
                 // Buat elemen kartu marketplace
                 const card = document.createElement("div");
@@ -151,7 +160,7 @@
                             ${descText}
                         </div>
                         <div class="promo-meta">
-                            <span class="price-tag"><i class="fas fa-coins"></i> Mulai dari harga menarik</span>
+                            <span class="price-tag"><i class="fas fa-coins"></i> ${formattedPrice}</span>
                             <button class="btn-order" data-url="${link.url}" data-label="${labelClean.replace(/['"]/g, '&quot;')}">
                                 <span>Beli Paket</span> <i class="fas fa-arrow-right"></i>
                             </button>
@@ -165,16 +174,6 @@
                     if (e.target.closest('.btn-order')) return;
                     // buka link utama
                     window.open(link.url, '_blank');
-                    // optional alert atau konfirmasi (tetap gunakan sweetalert2 jika diinginkan, tanpa merusak fungsi)
-                    Swal.fire({
-                        title: 'Membuka Paket',
-                        text: `Anda akan menuju halaman ${link.label}`,
-                        icon: 'info',
-                        timer: 1500,
-                        showConfirmButton: false,
-                        toast: true,
-                        position: 'top-end'
-                    });
                 });
 
                 // Event khusus tombol order (dengan sweetalert2 ringan & tetap navigasi)
@@ -183,62 +182,168 @@
                     e.stopPropagation();
                     const targetUrl = orderBtn.getAttribute("data-url");
                     const labelProduct = orderBtn.getAttribute("data-label");
-                    // konfirmasi marketplace (sweet alert) mirip fungsional tambahan tapi tetap buka link
-                    Swal.fire({
-                        title: `🛒 Pesan Paket: ${labelProduct}`,
-                        text: "Kamu akan diarahkan ke halaman pemesanan resmi. Lanjutkan?",
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#1f8a4c',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Ya, Lanjutkan',
-                        cancelButtonText: 'Batal'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.open(targetUrl, '_blank');
-                            Swal.fire({
-                                title: 'Terima kasih!',
-                                text: 'Semoga campaign sukses!',
-                                icon: 'success',
-                                timer: 1800,
-                                showConfirmButton: false
-                            });
-                        }
-                    });
                 });
 
                 container.appendChild(card);
             });
         }
 
-        // Fungsi fetch data SAMA persis dengan kode awal (mempertahankan error handling & sweetalert asli jika gagal)
-        fetch(WEB_APP_URL)
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                return response.json();
-            })
-            .then(data => {
-                // data bisa berbentuk array of objects dengan properti: url, label, icon, color (optional)
-                renderLinks(data);
-            })
-            .catch(err => {
-                document.getElementById("linksContainer").innerHTML = `<div class="empty-market"><i class="fas fa-exclamation-triangle"></i> Gagal memuat data promote.<br>Error: ${err.message}</div>`;
-                console.error("Fetch error:", err);
-                // optional sweet alert
-                Swal.fire({
-                    title: 'Gagal memuat data',
-                    text: 'Periksa koneksi atau coba lagi nanti.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
+        // ===================== OFFLINE CACHE SYSTEM =====================
+        const CACHE_KEY = 'promo_data_cache';
+        const CACHE_TIMESTAMP_KEY = 'promo_cache_timestamp';
+        const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 jam (bisa disesuaikan)
+
+        // Fungsi untuk menyimpan data ke localStorage
+        function saveToCache(data) {
+            try {
+                localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+                localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+                console.log('Data berhasil disimpan ke cache');
+                return true;
+            } catch (e) {
+                console.error('Gagal menyimpan cache:', e);
+                return false;
+            }
+        }
+
+        // Fungsi untuk mengambil data dari cache
+        function loadFromCache() {
+            try {
+                const cachedData = localStorage.getItem(CACHE_KEY);
+                const cacheTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+
+                if (!cachedData || !cacheTimestamp) {
+                    console.log('Cache tidak ditemukan');
+                    return null;
+                }
+
+                // Cek apakah cache masih valid (opsional)
+                const cacheAge = Date.now() - parseInt(cacheTimestamp);
+                if (cacheAge > CACHE_DURATION) {
+                    console.log('Cache sudah kadaluarsa');
+                    return null;
+                }
+
+                const data = JSON.parse(cachedData);
+                console.log('Data berhasil dimuat dari cache');
+                return data;
+            } catch (e) {
+                console.error('Gagal memuat cache:', e);
+                return null;
+            }
+        }
+
+        // Fungsi untuk cek koneksi internet
+        function isOnline() {
+            return navigator.onLine;
+        }
+
+        // Fungsi utama untuk memuat data (online/offline)
+        async function loadDataWithOfflineSupport() {
+            const container = document.getElementById("linksContainer");
+
+            // Tampilkan loading
+            container.innerHTML = `<div class="empty-market"><i class="fas fa-spinner fa-pulse"></i> Mohon Tunggu...</div>`;
+
+            // Coba ambil data dari network jika online
+            if (isOnline()) {
+                try {
+                    console.log('Mencoba mengambil data dari server...');
+                    const response = await fetch(WEB_APP_URL);
+
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                    const data = await response.json();
+
+                    // Simpan ke cache untuk offline
+                    saveToCache(data);
+
+                    // Render data
+                    renderLinks(data);
+
+                    return;
+                } catch (err) {
+                    console.error('Fetch error:', err);
+                    // Jika gagal fetch online, coba ambil dari cache
+                    const cachedData = loadFromCache();
+                    if (cachedData) {
+                        renderLinks(cachedData);
+                        Swal.fire({
+                            title: 'Mode Offline Terbatas',
+                            text: 'Gagal update data dari server',
+                            icon: 'warning',
+                            confirmButtonText: 'OK'
+                        });
+                        return;
+                    }
+
+                    // Jika tidak ada cache sama sekali
+                    container.innerHTML = `<div class="empty-market"><i class="fas fa-wifi"></i> Tidak ada koneksi internet<br>dan tidak ada data tersimpan.<br>Silakan coba lagi saat online.</div>`;
+                    document.getElementById("totalPaket").textContent = "0";
+                }
+            } else {
+                // Mode offline - langsung ambil dari cache
+                console.log('Mode offline: Mengambil dari cache');
+                const cachedData = loadFromCache();
+
+                if (cachedData) {
+                    renderLinks(cachedData);
+                    // Swal.fire({
+                    //     title: 'Mode Offline',
+                    //     text: 'Koneksi internet anda terputus',
+                    //     icon: 'warning',
+                    //     toast: true,
+                    //     position: 'top-end',
+                    //     showConfirmButton: false,
+                    //     timer: 3000
+                    // });
+                    Swal.fire({
+                        title: 'Mode Offline',
+                        text: 'Anda sedang offline. Cek kembali koneksi internet anda',
+                        icon: 'info',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    container.innerHTML = `<div class="empty-market"><i class="fas fa-cloud-slash"></i> Anda sedang offline<br>dan belum pernah memuat data sebelumnya.<br>Silakan online terlebih dahulu untuk mengakses.</div>`;
+                    document.getElementById("totalPaket").textContent = "0";
+                }
+            }
+        }
+
+        // Deteksi perubahan koneksi (online/offline)
+        window.addEventListener('online', function () {
+            Swal.fire({
+                title: 'Mode Online',
+                text: 'Koneksi internet anda tersedia',
+                icon: 'success',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
             });
+            loadDataWithOfflineSupport(); // Reload data saat online kembali
+        });
+
+        window.addEventListener('offline', function () {
+            // Swawal.fire({
+            //     title: 'Mode Offline',
+            //     text: 'Koneksi internet anda terputus',
+            //     icon: 'warning',
+            //     toast: true,
+            //     position: 'top-end',
+            //     showConfirmButton: false,
+            //     timer: 3000
+            // });
+            loadDataWithOfflineSupport();
+        });
+
+        // GANTI panggilan fetch() dengan fungsi baru
+        loadDataWithOfflineSupport();
+
+        // ===================== END OFFLINE CACHE SYSTEM =====================
 
         // Tahun dinamis
         document.getElementById("year").textContent = new Date().getFullYear();
-
-        // tambahan fungsional : jika ada link yang mengandung properti color/label sudah sesuai
-        // sepenuhnya kompatibel dengan API sebelumnya, tidak ada data yang hilang
-        // bahkan menampilkan informasi tambahan yang lebih hidup seperti marketplace
     </script>
 </body>
 
