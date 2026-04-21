@@ -163,10 +163,10 @@ body.dark .promo-card {
 	border-color: #1f2a44;
 	box-shadow: 0 12px 20px -12px rgba(0, 0, 0, 0.5);
 }
-.promo-card:hover {
+/* .promo-card:hover {
 	transform: translateY(-5px);
 	box-shadow: 0 24px 36px -12px rgba(0, 0, 0, 0.2);
-}
+} */
 .card-media {
 	background: #f1f5f9;
 	padding: 1.5rem 0;
@@ -255,10 +255,6 @@ body.dark .btn-order {
 	color: #0f6a3a;
 }
 
-/* tombol default lama diubah menjadi elemen kartu, namun tetap support custom color/icon dari data */
-/* fallback jika ingin tetap support class btn tapi kita akan render semua sebagai kartu */
-
-/* no data state */
 .empty-market {
 	text-align: center;
 	padding: 4rem 2rem;
@@ -287,6 +283,10 @@ footer a {
 		flex-direction: column;
 		text-align: center;
 		border-radius: 32px;
+		margin-bottom: 3.5rem;
+	}
+	.market-sub {
+		margin-bottom: 2rem;
 	}
 	.title-section h2 {
 		font-size: 1.5rem;

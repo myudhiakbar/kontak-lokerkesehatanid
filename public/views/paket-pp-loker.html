@@ -33,7 +33,7 @@
                 <p><i class="fas fa-chart-line"></i> Tingkatkan visibilitas lowongan & brand kesehatanmu</p>
             </div>
             <div class="stats-badge" id="statCounter">
-                <i class="fas fa-tag"></i> <span id="totalPaket">0</span> paket eksklusif
+                <i class="fas fa-tag"></i> Tersedia <span id="totalPaket">0</span> paket promosi
             </div>
         </div>
 
@@ -87,15 +87,6 @@
             document.getElementById("totalPaket").textContent = validLinks.length;
 
             validLinks.forEach((link, index) => {
-                // Menentukan icon yang dipakai (jika ada icon dari data, gunakan itu, fallback ke fa-bullhorn)
-                let iconHtml = '';
-                if (link.icon && link.icon.trim() !== "") {
-                    // jika icon dari data mengandung kelas fontawesome seperti "fas fa-fire" kita render langsung
-                    iconHtml = `<i class="${link.icon}"></i>`;
-                } else {
-                    iconHtml = `<i class="fas fa-chart-simple"></i>`;
-                }
-
                 // AMBIL DATA HARGA DARI GAS
                 let rawPrice = null;
                 if (link.harga !== undefined && link.harga !== null && link.harga !== "") rawPrice = link.harga;
@@ -105,7 +96,7 @@
                     // Cek apakah rawPrice adalah angka atau string numeric
                     let numericPrice = parseFloat(rawPrice.toString().replace(/[^0-9,-]/g, '').replace(',', '.'));
                     if (!isNaN(numericPrice) && isFinite(numericPrice)) {
-                        formattedPrice = `Harga Rp ${numericPrice.toLocaleString('id-ID')}`;
+                        formattedPrice = `Mulai dari Rp ${numericPrice.toLocaleString('id-ID')}`;
                     } else {
                         // Jika bukan angka murni, tampilkan teks asli
                         formattedPrice = rawPrice.toString();
@@ -137,9 +128,9 @@
                 }
 
                 // Membuat deskripsi menarik dari label 
-                const labelClean = link.label;
-                let descText = `Paket paid promote untuk menjangkau ribuan talenta kesehatan.`;
-                descText = `Tingkatkan klik hingga 3x lipat dengan paket ${labelClean}`;
+                const labelClean = link.desc;
+                let descText = ``;
+                descText = `Tingkatkan klik iklan anda dengan paket ${labelClean}`;
 
                 // Buat elemen kartu marketplace
                 const card = document.createElement("div");
@@ -148,12 +139,9 @@
 
                 // inner struktur
                 card.innerHTML = `
-                    <div class="card-media">
-                        ${iconHtml}
-                    </div>
                     <div class="card-content">
                         <div class="promo-title">
-                            ${labelClean}
+                            ${link.label}
                             <span class="promo-badge" style="${badgeStyle}">${priceTagText}</span>
                         </div>
                         <div class="promo-desc">
@@ -162,26 +150,17 @@
                         <div class="promo-meta">
                             <span class="price-tag"><i class="fas fa-coins"></i> ${formattedPrice}</span>
                             <button class="btn-order" data-url="${link.url}" data-label="${labelClean.replace(/['"]/g, '&quot;')}">
-                                <span>Beli Paket</span> <i class="fas fa-arrow-right"></i>
+                                <span>Beli Disini</span> <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
                     </div>
                 `;
 
-                // agar seluruh kartu bisa diklik juga (UX marketplace) namun jangan bentrok dengan tombol
-                card.addEventListener("click", (e) => {
-                    // jika klik berasal dari tombol order, sudah ditangani sendiri, jangan double fire
-                    if (e.target.closest('.btn-order')) return;
-                    // buka link utama
-                    window.open(link.url, '_blank');
-                });
-
                 // Event khusus tombol order (dengan sweetalert2 ringan & tetap navigasi)
                 const orderBtn = card.querySelector('.btn-order');
                 orderBtn.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    const targetUrl = orderBtn.getAttribute("data-url");
-                    const labelProduct = orderBtn.getAttribute("data-label");
+                    window.open(link.url, '_blank');
                 });
 
                 container.appendChild(card);
