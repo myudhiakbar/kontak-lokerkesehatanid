@@ -264,22 +264,22 @@
             minute: '2-digit'
           }).replace(/\./g, ':') + ' WIB';
 
-          const pesan = `Halo min, saya sudah transfer untuk iklan
-          - No Invoice: ${data.invoice}
-          - Produk: ${data.produk}
-          - Tanggal Order: ${tanggalLengkap}
-          - Nama Rek: ${data.namaRek}
-          - Nama Bank: ${data.namaBank}
-          - Bukti: ${fileUrl}`;
+          // const pesan = `Halo min, saya sudah transfer untuk iklan
+// - No Invoice: ${data.invoice || '-'}
+// - Produk: ${data.produk}
+// - Tanggal Order: ${tanggalLengkap}
+// - Nama Rek: ${data.namaRek}
+// - Bank Pengirim: ${data.namaBank}
+// - Bukti: ${fileUrl}`;
 
-          const pesanUrl = `https://wa.me/${ADMIN}?text=${encodeURIComponent(
-            pesan
-          )}`;
+          const pesan = `Halo min, saya sudah transfer untuk iklan\n\n- No Invoice: ${data.invoice || '-'}\n- Produk: ${data.produk}\n- Tanggal Order: ${tanggalLengkap}\n- Nama Rek: ${data.namaRek}\n- Bank Pengirim: ${data.namaBank}\n- Bukti: ${fileUrl}`;
+
+          const pesanUrl = `https://wa.me/${ADMIN}?text=${encodeURIComponent(pesan)}`;
 
           Swal.fire({
             icon: "success",
             title: "Order berhasil disimpan!",
-            text: "Silakan kirim bukti ke admin via WhatsApp.",
+            text: "Silakan kirim bukti ke admin via WhatsApp untuk verifikasi selanjutnya",
             allowOutsideClick: false,
             allowEscapeKey: false,
             confirmButtonText: "Kirim WhatsApp",

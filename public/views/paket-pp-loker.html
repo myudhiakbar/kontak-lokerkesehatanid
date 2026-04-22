@@ -19,7 +19,7 @@
         <!-- header marketplace dengan aksen jualan -->
         <div class="market-header">
             <div class="brand">
-                <h1><i class="fas fa-store me-1"></i> Loker Kesehatan ID Market</h1>
+                <h1><i class="fas fa-store me-1"></i> Loker Kesehatan ID Advertising</h1>
                 <div class="badge-market" style="margin-top: 6px;">
                     <i class="fas fa-bolt"></i> PAID PROMOTE
                 </div>
@@ -30,7 +30,7 @@
         <div class="market-sub">
             <div class="title-section">
                 <h2>🎯 Pilih Paket Promosi</h2>
-                <p><i class="fas fa-chart-line"></i> Tingkatkan visibilitas lowongan & brand kesehatanmu</p>
+                <p><i class="fas fa-chart-line"></i> Media iklan lowongan kesehatan terpercaya</p>
             </div>
             <div class="stats-badge" id="statCounter">
                 <i class="fas fa-tag"></i> Tersedia <span id="totalPaket">0</span> paket promosi
@@ -43,7 +43,7 @@
         </div>
 
         <footer>
-            <a href="">Loker Kesehatan ID</a> © 2018 - <span id="year"></span> — Marketplace Premium Boost
+            <a href="">Loker Kesehatan ID</a> © 2018 - <span id="year"></span>. All rights reserved.
         </footer>
     </div>
 
@@ -130,7 +130,7 @@
                 // Membuat deskripsi menarik dari label 
                 const labelClean = link.desc;
                 let descText = ``;
-                descText = `Tingkatkan klik iklan anda dengan paket ${labelClean}`;
+                descText = `Solusi promosi iklan tepat sasaran dengan paket ${labelClean}`;
 
                 // Buat elemen kartu marketplace
                 const card = document.createElement("div");
@@ -150,7 +150,7 @@
                         <div class="promo-meta">
                             <span class="price-tag"><i class="fas fa-coins"></i> ${formattedPrice}</span>
                             <button class="btn-order" data-url="${link.url}" data-label="${labelClean.replace(/['"]/g, '&quot;')}">
-                                <span>Beli Disini</span> <i class="fas fa-arrow-right"></i>
+                                <span>Order Disini</span> <i class="fas fa-arrow-right"></i>
                             </button>
                         </div>
                     </div>
@@ -199,7 +199,7 @@
                 // Cek apakah cache masih valid (opsional)
                 const cacheAge = Date.now() - parseInt(cacheTimestamp);
                 if (cacheAge > CACHE_DURATION) {
-                    console.log('Cache sudah kadaluarsa');
+                    console.log('Cache kadaluarsa');
                     return null;
                 }
 
@@ -248,7 +248,7 @@
                     if (cachedData) {
                         renderLinks(cachedData);
                         Swal.fire({
-                            title: 'Mode Offline Terbatas',
+                            title: 'Mode Offline',
                             text: 'Gagal update data dari server',
                             icon: 'warning',
                             confirmButtonText: 'OK'
@@ -304,15 +304,6 @@
         });
 
         window.addEventListener('offline', function () {
-            // Swawal.fire({
-            //     title: 'Mode Offline',
-            //     text: 'Koneksi internet anda terputus',
-            //     icon: 'warning',
-            //     toast: true,
-            //     position: 'top-end',
-            //     showConfirmButton: false,
-            //     timer: 3000
-            // });
             loadDataWithOfflineSupport();
         });
 
