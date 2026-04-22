@@ -41,6 +41,13 @@ input[type="file"].form-control {
 	padding: 0.5rem;
 }
 
+.form-control::placeholder,
+.form-select::placeholder {
+	font-weight: 100;
+	color: #6c757d;
+	opacity: 0.8;
+}
+
 .rekening {
 	margin: 2rem 0 0;
 }

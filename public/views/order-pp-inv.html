@@ -18,9 +18,8 @@
       <form id="orderForm">
         <div class="mb-3">
           <label for="invoice" class="form-label">Nomor Invoice (optional)</label>
-          <input type="text" id="invoice" name="invoice" class="form-control"
-            placeholder="contoh: INV00234 (cek email untuk no invoice)">
-          <div class="invalid-feedback">Wajib diisi</div>
+          <input type="text" id="invoice" name="invoice" class="form-control" placeholder="contoh: INV00234">
+          <span class="text-danger" style="font-size: 0.85rem;margin: 0.7rem 0 0;line-height: 1.2;">cek email anda untuk melihat nomor invoice</span>
         </div>
 
         <div class="mb-3">
@@ -40,7 +39,8 @@
 
         <div class="mb-3">
           <label for="namaBank" class="form-label">Nama Bank Pengirim <span class="text-danger">*</span></label>
-          <input type="text" id="namaBank" name="namaBank" class="form-control" placeholder="BCA/ Mandiri/ Lainnya" required>
+          <input type="text" id="namaBank" name="namaBank" class="form-control" placeholder="BCA/ Mandiri/ Lainnya"
+            required>
           <div class="invalid-feedback">Wajib diisi</div>
         </div>
 
@@ -71,12 +71,12 @@
 
         <div class="rekening mb-4">
           <p>➡️ BCA: <span id="bca">5800244716</span>
-            <button type="button" class="copy-btn btn btn-sm btn-light" onclick="copyText('bca')">(copy
-              rekening)</button>
+            <button type="button" class="copy-btn btn btn-sm btn-light" onclick="copyText('bca')">copy
+              rekening</button>
           </p>
           <p>➡️ MANDIRI: <span id="mandiri">9000032618168</span>
-            <button type="button" class="copy-btn btn btn-sm btn-light" onclick="copyText('mandiri')">(copy
-              rekening)</button>
+            <button type="button" class="copy-btn btn btn-sm btn-light" onclick="copyText('mandiri')">copy
+              rekening</button>
           </p>
           <p>a.n. Muhammad Yudhi Akbar</p>
         </div>
@@ -105,7 +105,7 @@
         icon: "success",
         title: "Nomor rekening disalin!",
         text: `✅ ${text}`,
-        timer: 1800,
+        timer: 800,
         showConfirmButton: false,
         timerProgressBar: true,
         hideClass: { popup: "animate__animated animate__zoomOut" },
