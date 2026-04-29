@@ -18,30 +18,31 @@
       <form id="orderForm">
         <div class="mb-3">
           <label for="invoice" class="form-label">Nomor Invoice (optional)</label>
-          <input type="text" id="invoice" name="invoice" class="form-control" placeholder="contoh: INV00234">
-          <span class="text-danger" style="font-size: 0.85rem;margin: 0.7rem 0 0;line-height: 1.2;">cek email anda untuk melihat nomor invoice</span>
+          <input type="text" id="invoice" name="invoice" class="form-control" placeholder="contoh: INV00234" autocomplete="on">
+          <span class="text-danger" style="font-size: 0.85rem;margin: 0.7rem 0 0;line-height: 1.2;">cek email anda untuk
+            melihat nomor invoice</span>
         </div>
 
         <div class="mb-3">
           <label for="produk" class="form-label">Pilih Paket <span class="text-danger">*</span></label>
           <select name="produk" id="produk" class="form-select" required>
-            <option value="">⏳ Memuat daftar paket...</option>
+            <option value="">⏳ Mohon tunggu...</option>
           </select>
           <div class="invalid-feedback">Silakan pilih paket</div>
         </div>
 
         <div class="mb-3">
           <label for="namaRek" class="form-label">Nama <span class="text-danger">*</span></label>
-          <input type="text" id="namaRek" name="namaRek" class="form-control" placeholder="Nama Pemilik Rekening"
-            autocomplete="name" required>
+          <input type="text" id="namaRek" name="namaRek" class="form-control" placeholder="Nama Pemilik Rekening" autocomplete="name" required>
           <div class="invalid-feedback">Wajib diisi</div>
         </div>
 
         <div class="mb-3">
           <label for="namaBank" class="form-label">Nama Bank Pengirim <span class="text-danger">*</span></label>
-          <input type="text" id="namaBank" name="namaBank" class="form-control" placeholder="BCA/ Mandiri/ Lainnya"
-            required>
-          <div class="invalid-feedback">Wajib diisi</div>
+          <select name="namaBank" id="namaBank" class="form-select" required>
+            <option value="">⏳ Mohon tunggu...</option>
+          </select>
+          <div class="invalid-feedback">Silakan pilih nama bank</div>
         </div>
 
         <!-- DROPZONE -->
@@ -71,14 +72,17 @@
 
         <div class="rekening mb-4">
           <p>➡️ BCA: <span id="bca">5800244716</span>
-            <button type="button" class="copy-btn btn btn-sm btn-light" style="border-color: green;" onclick="copyText('bca')">salin</button>
+            <button type="button" class="copy-btn btn btn-sm btn-light" style="border-color: green;"
+              onclick="copyText('bca')">salin</button>
           </p>
           <p>➡️ MANDIRI: <span id="mandiri">9000032618168</span>
-            <button type="button" class="copy-btn btn btn-sm btn-light" style="border-color: green;" onclick="copyText('mandiri')">salin</button>
+            <button type="button" class="copy-btn btn btn-sm btn-light" style="border-color: green;"
+              onclick="copyText('mandiri')">salin</button>
           </p>
           <p>a.n. Muhammad Yudhi Akbar</p>
           <p>➡️ QRIS <span id="mandiri">Jalan Cuan Store</span>
-            <button type="button" class="copy-btn btn btn-sm btn-light" style="border-color: green" onclick="window.open('https://drive.google.com/file/d/1ZF6gfYx8b32QnzVgJ2AK1qIAq34T-Ddh/view', '_blank')">lihat</button>
+            <button type="button" class="copy-btn btn btn-sm btn-light" style="border-color: green"
+              onclick="window.open('./../assets/img/qris-jalan-cuan.webp', '_blank')">lihat</button>
           </p>
         </div>
 
@@ -108,7 +112,7 @@
         text: `✅ ${text}`,
         timer: 800,
         showConfirmButton: false,
-        timerProgressBar: true,
+        // timerProgressBar: true,
         hideClass: { popup: "animate__animated animate__zoomOut" },
       });
     }
@@ -121,8 +125,7 @@
     const namaBankField = document.getElementById("namaBank");
     const buktiField = document.getElementById("bukti");
 
-    const WEBAPP =
-      "https://script.google.com/macros/s/AKfycbwnhTNcpCmCsgouD6RgiF7LH8Qrx_xAr6A56p_THvmpG-4U9frxsLVgkZ5LF9_YSbJeQw/exec";
+    const WEBAPP = "https://script.google.com/macros/s/AKfycbwnhTNcpCmCsgouD6RgiF7LH8Qrx_xAr6A56p_THvmpG-4U9frxsLVgkZ5LF9_YSbJeQw/exec";
     const ADMIN = "6287713314496";
 
     function validateField(field, condition) {
@@ -174,19 +177,48 @@
       try {
         const res = await fetch(WEBAPP);
         const data = await res.json();
+
         const select = document.getElementById("produk");
+        const selectBank = document.getElementById("namaBank");
+
         if (data.result === "success") {
+          // Reset option
           select.innerHTML = '<option value="">-- Pilih Paket --</option>';
-          data.produk.forEach(p => {
-            const opt = document.createElement("option");
-            opt.value = p;
-            opt.textContent = p;
-            select.appendChild(opt);
-          });
+          selectBank.innerHTML = '<option value="">-- Pilih Nama Bank --</option>';
+
+          // Produk
+          if (Array.isArray(data.produk)) {
+            data.produk.forEach((p) => {
+              const opt = document.createElement("option");
+              opt.value = p;
+              opt.textContent = p;
+              select.appendChild(opt);
+            });
+          }
+
+          // Nama Bank (FIX)
+          if (Array.isArray(data.namaBank) && data.namaBank.length > 0) {
+            data.namaBank.forEach((b) => {
+              const opt = document.createElement("option");
+              opt.value = b;
+              opt.textContent = b;
+              selectBank.appendChild(opt);
+            });
+          } else {
+            selectBank.innerHTML = '<option value="">⚠️ Data bank tidak tersedia</option>';
+          }
+
+        } else {
+          throw new Error("Response tidak valid");
         }
       } catch (err) {
-        console.error("Gagal memuat produk:", err);
-        document.getElementById("produk").innerHTML = '<option value="">⚠️ Gagal memuat daftar</option>';
+        console.error("Gagal memuat data:", err);
+
+        document.getElementById("produk").innerHTML =
+          '<option value="">⚠️ Gagal memuat daftar</option>';
+
+        document.getElementById("namaBank").innerHTML =
+          '<option value="">⚠️ Gagal memuat daftar</option>';
       }
     }
 
@@ -266,12 +298,12 @@
           }).replace(/\./g, ':') + ' WIB';
 
           // const pesan = `Halo min, saya sudah transfer untuk iklan
-// - No Invoice: ${data.invoice || '-'}
-// - Produk: ${data.produk}
-// - Tanggal Order: ${tanggalLengkap}
-// - Nama Rek: ${data.namaRek}
-// - Bank Pengirim: ${data.namaBank}
-// - Bukti: ${fileUrl}`;
+          // - No Invoice: ${data.invoice || '-'}
+          // - Produk: ${data.produk}
+          // - Tanggal Order: ${tanggalLengkap}
+          // - Nama Rek: ${data.namaRek}
+          // - Bank Pengirim: ${data.namaBank}
+          // - Bukti: ${fileUrl}`;
 
           const pesan = `Halo min, saya sudah transfer untuk iklan\n\n- No Invoice: ${data.invoice || '-'}\n- Produk: ${data.produk}\n- Tanggal Order: ${tanggalLengkap}\n- Nama Rek: ${data.namaRek}\n- Bank Pengirim: ${data.namaBank}\n- Bukti: ${fileUrl}`;
 
