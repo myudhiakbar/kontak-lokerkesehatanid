@@ -80,7 +80,7 @@
               onclick="copyText('mandiri')">salin</button>
           </p>
           <p>a.n. Muhammad Yudhi Akbar</p>
-          <p>➡️ QRIS <span id="mandiri">Jalan Cuan Store</span>
+          <p>➡️ QRIS <span id="qris">Jalan Cuan Store</span>
             <button type="button" class="copy-btn btn btn-sm btn-light" style="border-color: green"
               onclick="window.open('./../assets/img/qris-jalan-cuan.webp', '_blank')">lihat</button>
           </p>
@@ -196,7 +196,7 @@
             });
           }
 
-          // Nama Bank (FIX)
+          // Nama Bank
           if (Array.isArray(data.namaBank) && data.namaBank.length > 0) {
             data.namaBank.forEach((b) => {
               const opt = document.createElement("option");
@@ -215,10 +215,10 @@
         console.error("Gagal memuat data:", err);
 
         document.getElementById("produk").innerHTML =
-          '<option value="">⚠️ Gagal memuat daftar</option>';
+          '<option value="">⚠️ Gagal memuat daftar produk</option>';
 
         document.getElementById("namaBank").innerHTML =
-          '<option value="">⚠️ Gagal memuat daftar</option>';
+          '<option value="">⚠️ Gagal memuat daftar bank</option>';
       }
     }
 
@@ -332,8 +332,13 @@
               );
 
             // Reset file upload
-            previewBox.style.display = "none";
-            dzText.textContent = "Klik untuk upload atau seret file ke sini";
+            const previewBoxReset = document.getElementById("filePreviewBox");
+            const dzTextReset = document.getElementById("dropzoneText");
+            const buktiInputReset = document.getElementById("bukti");
+
+            if (previewBoxReset) previewBoxReset.style.display = "none";
+            if (dzTextReset) dzTextReset.textContent = "Klik untuk upload atau seret file ke sini";
+            if (buktiInputReset) buktiInputReset.value = "";
           });
         } else {
           Swal.fire({
@@ -420,6 +425,8 @@
     // Hapus file
     removeBtn.addEventListener("click", () => {
       buktiInput.value = "";
+
+      buktiInput.dispatchEvent(new Event("input"));
     });
 
     // Load produk saat halaman dibuka
