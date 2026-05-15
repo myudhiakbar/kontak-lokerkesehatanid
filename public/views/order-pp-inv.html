@@ -18,7 +18,8 @@
       <form id="orderForm">
         <div class="mb-3">
           <label for="invoice" class="form-label">Nomor Invoice (optional)</label>
-          <input type="text" id="invoice" name="invoice" class="form-control" placeholder="contoh: INV00234" autocomplete="on">
+          <input type="text" id="invoice" name="invoice" class="form-control" placeholder="contoh: INV00234"
+            autocomplete="on">
           <span class="text-danger" style="font-size: 0.85rem;margin: 0.7rem 0 0;line-height: 1.2;">cek email anda untuk
             melihat nomor invoice</span>
         </div>
@@ -33,13 +34,22 @@
 
         <div class="mb-3">
           <label for="namaRek" class="form-label">Nama <span class="text-danger">*</span></label>
-          <input type="text" id="namaRek" name="namaRek" class="form-control" placeholder="Nama Pemilik Rekening" autocomplete="name" required>
+          <input type="text" id="namaRek" name="namaRek" class="form-control" placeholder="Nama Pemilik Rekening"
+            autocomplete="name" required>
           <div class="invalid-feedback">Wajib diisi</div>
         </div>
 
         <div class="mb-3">
           <label for="namaBank" class="form-label">Nama Bank Pengirim <span class="text-danger">*</span></label>
           <select name="namaBank" id="namaBank" class="form-select" required>
+            <option value="">⏳ Mohon tunggu...</option>
+          </select>
+          <div class="invalid-feedback">Silakan pilih nama bank</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="namaBank2" class="form-label">Nama Bank Penerima <span class="text-danger">*</span></label>
+          <select name="namaBank2" id="namaBank2" class="form-select" required>
             <option value="">⏳ Mohon tunggu...</option>
           </select>
           <div class="invalid-feedback">Silakan pilih nama bank</div>
@@ -123,6 +133,7 @@
     const invoiceField = document.getElementById("invoice");
     const namaRekField = document.getElementById("namaRek");
     const namaBankField = document.getElementById("namaBank");
+    const namaBankField2 = document.getElementById("namaBank2");
     const buktiField = document.getElementById("bukti");
 
     const WEBAPP = "https://script.google.com/macros/s/AKfycbwnhTNcpCmCsgouD6RgiF7LH8Qrx_xAr6A56p_THvmpG-4U9frxsLVgkZ5LF9_YSbJeQw/exec";
@@ -153,6 +164,7 @@
       validateField(produkField, produkField.value.trim() !== "");
       validateField(namaRekField, namaRekField.value.trim() !== "");
       validateField(namaBankField, namaBankField.value.trim() !== "");
+      validateField(namaBankField2, namaBankField2.value.trim() !== "");
       validateField(buktiField, !!buktiField.files[0]);
 
       form.querySelectorAll(".form-control, .form-select").forEach((f) => {
@@ -169,6 +181,7 @@
       if (field.matches("#produk")) validateField(field, field.value.trim() !== "");
       if (field.matches("#namaRek")) validateField(field, field.value.trim() !== "");
       if (field.matches("#namaBank")) validateField(field, field.value.trim() !== "");
+      if (field.matches("#namaBank2")) validateField(field, field.value.trim() !== "");
       if (field.matches("#bukti")) validateField(field, !!field.files[0]);
     });
 
@@ -180,13 +193,15 @@
 
         const select = document.getElementById("produk");
         const selectBank = document.getElementById("namaBank");
+        const selectBank2 = document.getElementById("namaBank2");
 
         if (data.result === "success") {
-          // Reset option
+          // 1. Reset option semua select dropdown
           select.innerHTML = '<option value="">-- Pilih Paket --</option>';
-          selectBank.innerHTML = '<option value="">-- Pilih Nama Bank --</option>';
+          selectBank.innerHTML = '<option value="">-- Pilih Nama Bank Penerima --</option>';
+          selectBank2.innerHTML = '<option value="">-- Pilih Nama Bank Pengirim --</option>';
 
-          // Produk
+          // 2. Isi Dropdown Produk
           if (Array.isArray(data.produk)) {
             data.produk.forEach((p) => {
               const opt = document.createElement("option");
@@ -196,7 +211,7 @@
             });
           }
 
-          // Nama Bank
+          // 3. Isi Dropdown Nama Bank 1 (Kolom 1)
           if (Array.isArray(data.namaBank) && data.namaBank.length > 0) {
             data.namaBank.forEach((b) => {
               const opt = document.createElement("option");
@@ -205,7 +220,19 @@
               selectBank.appendChild(opt);
             });
           } else {
-            selectBank.innerHTML = '<option value="">⚠️ Data bank tidak tersedia</option>';
+            selectBank.innerHTML = '<option value="">⚠️ Data bank penerima tidak tersedia</option>';
+          }
+
+          // 4. Isi Dropdown Nama Bank 2 (Kolom 2)
+          if (Array.isArray(data.namaBank2) && data.namaBank2.length > 0) {
+            data.namaBank2.forEach((b) => {
+              const opt = document.createElement("option");
+              opt.value = b;
+              opt.textContent = b;
+              selectBank2.appendChild(opt);
+            });
+          } else {
+            selectBank2.innerHTML = '<option value="">⚠️ Data bank pengirim tidak tersedia</option>';
           }
 
         } else {
@@ -218,7 +245,10 @@
           '<option value="">⚠️ Gagal memuat daftar produk</option>';
 
         document.getElementById("namaBank").innerHTML =
-          '<option value="">⚠️ Gagal memuat daftar bank</option>';
+          '<option value="">⚠️ Gagal memuat daftar bank pengirim</option>';
+
+        document.getElementById("namaBank2").innerHTML =
+          '<option value="">⚠️ Gagal memuat daftar bank penerima</option>';
       }
     }
 
@@ -305,7 +335,7 @@
           // - Bank Pengirim: ${data.namaBank}
           // - Bukti: ${fileUrl}`;
 
-          const pesan = `Halo min, saya sudah transfer untuk iklan\n\n- No Invoice: ${data.invoice || '-'}\n- Produk: ${data.produk}\n- Tanggal Order: ${tanggalLengkap}\n- Nama Rek: ${data.namaRek}\n- Bank Pengirim: ${data.namaBank}\n- Bukti: ${fileUrl}`;
+          const pesan = `Halo min, saya sudah transfer untuk iklan\n\n- No Invoice: ${data.invoice || '-'}\n- Produk: ${data.produk}\n- Tanggal Order: ${tanggalLengkap}\n- Nama Rek: ${data.namaRek}\n- Bank Pengirim: ${data.namaBank}\n- Bank Penerima: ${data.namaBank2}\n- Bukti: ${fileUrl}`;
 
           const pesanUrl = `https://wa.me/${ADMIN}?text=${encodeURIComponent(pesan)}`;
 
