@@ -150,7 +150,7 @@
         const result = await res.json();
 
         if (result.result === "success") {
-          const pesan = `Hai admin @lokerkesehatanid, nama saya ${data.nama}\nwa : ${data.wa}\n\n${data.isiPesan}`;
+          const pesan = `Hai admin @lokerkesehatanid, nama saya ${data.nama} ( ${data.wa} )\n\n${data.isiPesan}`;
           const pesanUrl = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(pesan)}`;
 
           Swal.fire({
