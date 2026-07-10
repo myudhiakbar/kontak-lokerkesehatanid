@@ -100,11 +100,11 @@ function renderLinks(links) {
 
 // Daftar link sponsor (putar/acak)
 const sponsorUrls = [
-	"https://s.shopee.co.id/6AcTEtdjIz",
-	"https://s.shopee.co.id/5pzcqLYhyV",
-	"https://s.shopee.co.id/40Xyf11I5q",
-	"https://s.shopee.co.id/AKS2ChKiHa",
-	"https://s.shopee.co.id/30fRTFltLp",
+	"https://s.shopee.co.id/5VTdOhqb8i",
+	"https://s.shopee.co.id/9zw2l2lBhd",
+	"https://s.shopee.co.id/5fn3bNGtRA",
+	"https://s.shopee.co.id/7VEhmmeezQ",
+	"https://s.shopee.co.id/6ffanHfRZa",
 ];
 
 const cooldown = 12 * 60 * 60 * 1000; // 12 jam dalam milidetik
