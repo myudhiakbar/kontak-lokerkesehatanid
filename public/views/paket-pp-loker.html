@@ -160,7 +160,7 @@
                 const orderBtn = card.querySelector('.btn-order');
                 orderBtn.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    window.open(link.url, '_blank');
+                    window.location.href = link.url;
                 });
 
                 container.appendChild(card);
