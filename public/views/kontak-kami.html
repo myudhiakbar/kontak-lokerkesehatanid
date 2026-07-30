@@ -18,21 +18,21 @@
       <div class="mb-3">
         <label for="nama" class="form-label">Nama <span class="text-danger">*</span></label>
         <input type="text" id="nama" name="nama" class="form-control" required />
-        <div class="invalid-feedback">Wajib diisi</div>
+        <div class="invalid-feedback">Nama wajib diisi</div>
       </div>
 
       <div class="mb-3">
         <label for="no_wa" class="form-label">Nomor WhatsApp <span class="text-danger">*</span></label>
         <input type="text" id="no_wa" name="no_wa" class="form-control" required />
         <div class="invalid-feedback">
-          Wajib diisi angka dan no WA yang valid ya
+          Masukkan nomor WhatsApp yang valid (10-13 digit)
         </div>
       </div>
 
       <div class="mb-3">
         <label for="isi_pesan" class="form-label">Isi Pesan <span class="text-danger">*</span></label>
         <textarea id="isi_pesan" name="isi_pesan" class="form-control" rows="4" required></textarea>
-        <div class="invalid-feedback">Wajib diisi</div>
+        <div class="invalid-feedback">Tuliskan pertanyaan yang ingin disampaikan</div>
       </div>
 
       <button type="submit" id="submitBtn" class="btn btn-primary w-100">
@@ -109,7 +109,7 @@
         validateField(field, field.value.trim() !== "");
     });
 
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
       if (!validateFormFields()) {
         const firstInvalid = form.querySelector(".is-invalid");
@@ -119,75 +119,128 @@
 
       const submitBtn = document.getElementById("submitBtn");
 
-      Swal.fire({
-        title: "Menyimpan pesan...",
-        text: "Mohon tunggu sebentar.",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
       submitBtn.disabled = true;
       submitBtn.innerHTML = `
-    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-    Mengirim...
-  `;
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        Memproses...
+      `;
 
       const nama = namaField.value.trim();
       const wa = waField.value.trim();
       const isiPesan = pesanField.value.trim();
       const data = { nama, wa, isiPesan };
 
-      const scriptURL =
-        "https://script.google.com/macros/s/AKfycbztu0VlT9aVNgqxLLm8e687FypkgYFPYUsqlThUH2R8d8sZNGg9P2Vn72dfSuYkWnc/exec";
       const ADMIN_WA = "6287713314496";
 
-      try {
-        const res = await fetch(scriptURL, {
-          method: "POST",
-          body: JSON.stringify(data),
-        });
-        const result = await res.json();
+      // Langsung buat pesan URL WhatsApp tanpa fetch ke GAS
+      const pesan = `Hai admin @lokerkesehatanid, nama saya ${data.nama} / _${data.wa}_ \n\n${data.isiPesan}`;
+      const pesanUrl = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(pesan)}`;
 
-        if (result.result === "success") {
-          const pesan = `Hai admin @lokerkesehatanid, nama saya ${data.nama} ( ${data.wa} )\n\n${data.isiPesan}`;
-          const pesanUrl = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(pesan)}`;
-
-          Swal.fire({
-            icon: "success",
-            title: "Pesan berhasil disimpan!",
-            text: "Klik tombol OK untuk kirim ke admin via WhatsApp",
-            confirmButtonText: "OK, kirim ke admin",
-            confirmButtonColor: "#127720",
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-          }).then(() => {
-            window.location.href = pesanUrl;
-            form.reset();
-            form.querySelectorAll(".form-control").forEach((field) => {
-              field.classList.remove("is-valid", "is-invalid");
-            });
-          });
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Gagal menyimpan pesan!",
-            text: result.message || "Terjadi kesalahan di server.",
-            confirmButtonText: "OK",
+      Swal.fire({
+        icon: "success",
+        title: "Pesan siap dikirim!",
+        text: "Klik tombol OK untuk kirim ke admin via WhatsApp",
+        showCancelButton: true,
+        confirmButtonText: "OK, kirim ke admin",
+        cancelButtonText: "Batal",
+        confirmButtonColor: "#127720",
+        cancelButtonColor: "#d33",
+        reverseButtons: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = pesanUrl;
+          form.reset();
+          form.querySelectorAll(".form-control").forEach((field) => {
+            field.classList.remove("is-valid", "is-invalid");
           });
         }
-      } catch (err) {
-        Swal.fire({
-          icon: "error",
-          title: "Terjadi kesalahan!",
-          text: err.message,
-          confirmButtonText: "OK",
-        });
-      } finally {
+        // Tombol submit dikembalikan seperti semula baik diklik OK maupun Batal
         submitBtn.disabled = false;
         submitBtn.innerHTML = `Kirim Pesan`;
-      }
+      });
     });
+
+    //   form.addEventListener("submit", async (e) => {
+    //     e.preventDefault();
+    //     if (!validateFormFields()) {
+    //       const firstInvalid = form.querySelector(".is-invalid");
+    //       if (firstInvalid) firstInvalid.focus();
+    //       return;
+    //     }
+
+    //     const submitBtn = document.getElementById("submitBtn");
+
+    //     Swal.fire({
+    //       title: "Menyimpan pesan...",
+    //       text: "Mohon tunggu sebentar.",
+    //       allowOutsideClick: false,
+    //       allowEscapeKey: false,
+    //       didOpen: () => Swal.showLoading(),
+    //     });
+
+    //     submitBtn.disabled = true;
+    //     submitBtn.innerHTML = `
+    //   <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    //   Mengirim...
+    // `;
+
+    //     const nama = namaField.value.trim();
+    //     const wa = waField.value.trim();
+    //     const isiPesan = pesanField.value.trim();
+    //     const data = { nama, wa, isiPesan };
+
+    //     const scriptURL =
+    //       "https://script.google.com/macros/s/AKfycbztu0VlT9aVNgqxLLm8e687FypkgYFPYUsqlThUH2R8d8sZNGg9P2Vn72dfSuYkWnc/exec";
+    //     const ADMIN_WA = "6287713314496";
+
+    //     try {
+    //       const res = await fetch(scriptURL, {
+    //         method: "POST",
+    //         body: JSON.stringify(data),
+    //       });
+    //       const result = await res.json();
+
+    //       if (result.result === "success") {
+    //         const pesan = `Hai admin @lokerkesehatanid, nama saya ${data.nama} / _ ${data.wa}_ \n\n${data.isiPesan}`;
+    //         const pesanUrl = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(pesan)}`;
+
+    //         Swal.fire({
+    //           icon: "success",
+    //           title: "Pesan berhasil disimpan!",
+    //           text: "Klik tombol OK untuk kirim ke admin via WhatsApp",
+    //           confirmButtonText: "OK, kirim ke admin",
+    //           confirmButtonColor: "#127720",
+    //           allowOutsideClick: false,
+    //           allowEscapeKey: false,
+    //         }).then(() => {
+    //           window.location.href = pesanUrl;
+    //           form.reset();
+    //           form.querySelectorAll(".form-control").forEach((field) => {
+    //             field.classList.remove("is-valid", "is-invalid");
+    //           });
+    //         });
+    //       } else {
+    //         Swal.fire({
+    //           icon: "error",
+    //           title: "Gagal menyimpan pesan!",
+    //           text: result.message || "Terjadi kesalahan di server.",
+    //           confirmButtonText: "OK",
+    //         });
+    //       }
+    //     } catch (err) {
+    //       Swal.fire({
+    //         icon: "error",
+    //         title: "Terjadi kesalahan!",
+    //         text: err.message,
+    //         confirmButtonText: "OK",
+    //       });
+    //     } finally {
+    //       submitBtn.disabled = false;
+    //       submitBtn.innerHTML = `Kirim Pesan`;
+    //     }
+    //   });
   </script>
 </body>
 
