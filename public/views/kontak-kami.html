@@ -132,7 +132,6 @@
 
       const ADMIN_WA = "6287713314496";
 
-      // Langsung buat pesan URL WhatsApp tanpa fetch ke GAS
       const pesan = `Hai admin @lokerkesehatanid, nama saya ${data.nama} / _${data.wa}_ \n\n${data.isiPesan}`;
       const pesanUrl = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(pesan)}`;
 
