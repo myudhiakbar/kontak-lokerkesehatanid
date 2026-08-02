@@ -49,7 +49,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Dark mode + penyimpanan localstorage + ubah icon
         const toggleBtn = document.getElementById("darkToggle");
         const body = document.body;
         if (localStorage.getItem("darkMode") === "true") {
@@ -65,13 +64,10 @@
 
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyqJ4u8maNKM97iqKl511Q9K8pY5_SnJQajA6Gtt7I6-RrZfq2ZT79zbmYsmYT8Sq28/exec?site=B";
 
-        // semua link yang valid memiliki url, label, icon, color (opsional) dan akan ditampilkan sebagai kartu dengan aksi klik ke url (target _blank)
-        // bahkan menambahkan efek sweetalert2 jika diperlukan (contoh: order konfirmasi)
         function renderLinks(links) {
             const container = document.getElementById("linksContainer");
             container.innerHTML = "";
 
-            // Filter valid link (sama seperti kode awal)
             const validLinks = links.filter(link =>
                 link.url && link.url.trim() !== "" &&
                 link.label && link.label.trim() !== ""
@@ -87,7 +83,6 @@
             document.getElementById("totalPaket").textContent = validLinks.length;
 
             validLinks.forEach((link, index) => {
-                // AMBIL DATA HARGA DARI GAS
                 let rawPrice = null;
                 if (link.harga !== undefined && link.harga !== null && link.harga !== "") rawPrice = link.harga;
 
@@ -98,18 +93,16 @@
                     if (!isNaN(numericPrice) && isFinite(numericPrice)) {
                         formattedPrice = `Mulai dari Rp ${numericPrice.toLocaleString('id-ID')}`;
                     } else {
-                        // Jika bukan angka murni, tampilkan teks asli
                         formattedPrice = rawPrice.toString();
-                        // pastikan tidak terlalu panjang
                         if (formattedPrice.length > 35) formattedPrice = formattedPrice.substring(0, 32) + '...';
                     }
                 }
 
                 // warna accent untuk border atau badge
                 let accentColor = link.color || "btn-default";
-                // mapping warna style untuk memberikan badge warna yang menarik
                 let badgeStyle = "";
                 let priceTagText = "Promo Populer";
+
                 if (accentColor.includes("primary") || accentColor.includes("btn-primary")) {
                     badgeStyle = "background:#e0f2fe; color:#0369a1;";
                     priceTagText = "⭐ Best Value";
@@ -129,8 +122,7 @@
 
                 // Membuat deskripsi menarik dari label 
                 const labelClean = link.desc;
-                let descText = ``;
-                descText = `Solusi promosi iklan tepat sasaran dengan paket ${labelClean}`;
+                let descText = `Solusi promosi iklan tepat sasaran dengan paket ${labelClean}`;
 
                 // Buat elemen kartu marketplace
                 const card = document.createElement("div");
@@ -156,7 +148,6 @@
                     </div>
                 `;
 
-                // Event khusus tombol order (dengan sweetalert2 ringan & tetap navigasi)
                 const orderBtn = card.querySelector('.btn-order');
                 orderBtn.addEventListener("click", (e) => {
                     e.stopPropagation();
@@ -167,152 +158,62 @@
             });
         }
 
-        // ===================== OFFLINE CACHE SYSTEM =====================
-        const CACHE_KEY = 'promo_data_cache';
-        const CACHE_TIMESTAMP_KEY = 'promo_cache_timestamp';
-        const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 jam (bisa disesuaikan)
+        // ===================== STALE-WHILE-REVALIDATE (SWR) CACHE SYSTEM =====================
+        const CACHE_KEY = "promo_data_cache_swr";
 
-        // Fungsi untuk menyimpan data ke localStorage
-        function saveToCache(data) {
-            try {
-                localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-                localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
-                console.log('Data berhasil disimpan ke cache');
-                return true;
-            } catch (e) {
-                console.error('Gagal menyimpan cache:', e);
-                return false;
-            }
-        }
-
-        // Fungsi untuk mengambil data dari cache
-        function loadFromCache() {
-            try {
-                const cachedData = localStorage.getItem(CACHE_KEY);
-                const cacheTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
-
-                if (!cachedData || !cacheTimestamp) {
-                    console.log('Cache tidak ditemukan');
-                    return null;
-                }
-
-                // Cek apakah cache masih valid (opsional)
-                const cacheAge = Date.now() - parseInt(cacheTimestamp);
-                if (cacheAge > CACHE_DURATION) {
-                    console.log('Cache kadaluarsa');
-                    return null;
-                }
-
-                const data = JSON.parse(cachedData);
-                console.log('Data berhasil dimuat dari cache');
-                return data;
-            } catch (e) {
-                console.error('Gagal memuat cache:', e);
-                return null;
-            }
-        }
-
-        // Fungsi untuk cek koneksi internet
-        function isOnline() {
-            return navigator.onLine;
-        }
-
-        // Fungsi utama untuk memuat data (online/offline)
-        async function loadDataWithOfflineSupport() {
+        async function loadDataSWR() {
             const container = document.getElementById("linksContainer");
+            let isCached = false;
+            let cachedDataString = null; // Tambahkan variabel untuk menyimpan string cache
 
-            // Tampilkan loading
-            container.innerHTML = `<div class="empty-market"><i class="fas fa-spinner fa-pulse"></i> Mohon Tunggu...</div>`;
-
-            // Coba ambil data dari network jika online
-            if (isOnline()) {
+            // 1. STALE: Cek dan tampilkan data dari LocalStorage jika ada
+            const cachedDataStr = localStorage.getItem(CACHE_KEY);
+            if (cachedDataStr) {
                 try {
-                    console.log('Mencoba mengambil data dari server...');
-                    const response = await fetch(WEB_APP_URL);
-
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                    const data = await response.json();
-
-                    // Simpan ke cache untuk offline
-                    saveToCache(data);
-
-                    // Render data
-                    renderLinks(data);
-
-                    return;
-                } catch (err) {
-                    console.error('Fetch error:', err);
-                    // Jika gagal fetch online, coba ambil dari cache
-                    const cachedData = loadFromCache();
-                    if (cachedData) {
-                        renderLinks(cachedData);
-                        Swal.fire({
-                            title: 'Mode Offline',
-                            text: 'Gagal update data dari server',
-                            icon: 'warning',
-                            confirmButtonText: 'OK'
-                        });
-                        return;
-                    }
-
-                    // Jika tidak ada cache sama sekali
-                    container.innerHTML = `<div class="empty-market"><i class="fas fa-wifi"></i> Tidak ada koneksi internet<br>dan tidak ada data tersimpan.<br>Silakan coba lagi saat online.</div>`;
-                    document.getElementById("totalPaket").textContent = "0";
-                }
-            } else {
-                // Mode offline - langsung ambil dari cache
-                console.log('Mode offline: Mengambil dari cache');
-                const cachedData = loadFromCache();
-
-                if (cachedData) {
+                    const cachedData = JSON.parse(cachedDataStr);
+                    cachedDataString = cachedDataStr; // Simpan untuk perbandingan nanti
                     renderLinks(cachedData);
-                    // Swal.fire({
-                    //     title: 'Mode Offline',
-                    //     text: 'Koneksi internet anda terputus',
-                    //     icon: 'warning',
-                    //     toast: true,
-                    //     position: 'top-end',
-                    //     showConfirmButton: false,
-                    //     timer: 3000
-                    // });
-                    Swal.fire({
-                        title: 'Mode Offline',
-                        text: 'Anda sedang offline. Cek kembali koneksi internet anda',
-                        icon: 'info',
-                        confirmButtonText: 'OK'
-                    });
-                } else {
-                    container.innerHTML = `<div class="empty-market"><i class="fas fa-cloud-slash"></i> Anda sedang offline<br>dan belum pernah memuat data sebelumnya.<br>Silakan online terlebih dahulu untuk mengakses.</div>`;
+                    isCached = true;
+                } catch (e) {
+                    console.warn("Gagal membaca cache lokal:", e);
+                }
+            }
+
+            if (!isCached) {
+                container.innerHTML = `<div class="empty-market"><i class="fas fa-spinner fa-pulse"></i> Mohon Tunggu...</div>`;
+            }
+
+            // 2. REVALIDATE: Ambil data terbaru dari server di background
+            try {
+                console.log('Mengambil data terbaru dari server...');
+                const response = await fetch(WEB_APP_URL);
+
+                if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+
+                const freshData = await response.json();
+                const freshDataString = JSON.stringify(freshData);
+
+                // 3. UPDATE: Cek apakah data berubah sebelum merender ulang
+                if (isCached && cachedDataString === freshDataString) {
+                    console.log('Data server sama dengan cache, skip render ulang.');
+                    return;
+                }
+
+                localStorage.setItem(CACHE_KEY, freshDataString);
+                renderLinks(freshData);
+
+            } catch (error) {
+                console.error("Gagal revalidasi data dari server:", error);
+
+                if (!isCached) {
+                    container.innerHTML = `<div class="empty-market"><i class="fas fa-exclamation-triangle"></i> Gagal menghubungi server.<br>Silakan periksa koneksi internet Anda.</div>`;
                     document.getElementById("totalPaket").textContent = "0";
                 }
             }
         }
 
-        // Deteksi perubahan koneksi (online/offline)
-        window.addEventListener('online', function () {
-            Swal.fire({
-                title: 'Mode Online',
-                text: 'Koneksi internet anda tersedia',
-                icon: 'success',
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000
-            });
-            loadDataWithOfflineSupport(); // Reload data saat online kembali
-        });
+        loadDataSWR();
 
-        window.addEventListener('offline', function () {
-            loadDataWithOfflineSupport();
-        });
-
-        // GANTI panggilan fetch() dengan fungsi baru
-        loadDataWithOfflineSupport();
-
-        // ===================== END OFFLINE CACHE SYSTEM =====================
-
-        // Tahun dinamis
         document.getElementById("year").textContent = new Date().getFullYear();
     </script>
 </body>

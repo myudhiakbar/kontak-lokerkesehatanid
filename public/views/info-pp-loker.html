@@ -32,91 +32,114 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     $(document).ready(function () {
-
       const scriptUrl = "https://script.google.com/macros/s/AKfycbyqJ4u8maNKM97iqKl511Q9K8pY5_SnJQajA6Gtt7I6-RrZfq2ZT79zbmYsmYT8Sq28/exec?site=C";
 
-      // ===== Ambil parameter sheet dari URL browser =====
       const urlParams = new URLSearchParams(window.location.search);
       const sheetName = urlParams.get("sheet") || "Konten";
 
-      // ===== Ambil data dari GAS =====
+      const cacheKey = `gas_data_${sheetName}`;
+      let isCached = false;
+
+      function renderUI(data) {
+        if (data.error) {
+          $("body").html(`<div class="text-center p-5 text-danger">${data.error}</div>`);
+          return;
+        }
+
+        document.title = data.title || "Tanpa Judul";
+        $("#mainTitle").text(data.h1 || "");
+        $("#subTitle").text(data.h2 || "");
+        $("#paragraph").html(data.p || "");
+
+        const footerHtml = (data.footer || "").replace("{{year}}", new Date().getFullYear());
+        $("#footer").html(footerHtml);
+
+        aktifkanTombolWA();
+      }
+
+      // ===== 1. TAMPILKAN CACHE TERLEBIH DAHULU (STALE) =====
+      const cachedDataStr = localStorage.getItem(cacheKey);
+      if (cachedDataStr) {
+        try {
+          const cachedData = JSON.parse(cachedDataStr);
+          renderUI(cachedData);
+          $("#loadingOverlay").addClass("fade-out"); // Hilangkan loading lebih awal
+          isCached = true;
+        } catch (e) {
+          console.warn("Gagal membaca cache", e);
+        }
+      }
+
+      // ===== 2. AMBIL DATA TERBARU DARI GAS (REVALIDATE) =====
       $.getJSON(scriptUrl, { sheet: sheetName })
         .done(function (data) {
+          localStorage.setItem(cacheKey, JSON.stringify(data));
 
-          if (data.error) {
-            $("body").html(
-              `<div class="text-center p-5 text-danger">${data.error}</div>`
-            );
-            return;
+          renderUI(data);
+
+          if (!isCached) {
+            $("#loadingOverlay").addClass("fade-out");
           }
-
-          // Mapping data JSON ke elemen HTML
-          document.title = data.title || "Tanpa Judul";
-          $("#mainTitle").text(data.h1 || "");
-          $("#subTitle").text(data.h2 || "");
-          $("#paragraph").html(data.p || "");
-
-          const footerHtml = (data.footer || "")
-            .replace("{{year}}", new Date().getFullYear());
-
-          $("#footer").html(footerHtml);
-
-          aktifkanTombolWA();
-
-          $("#loadingOverlay").addClass("fade-out"); // HILANGKAN LOADING
         })
         .fail(function () {
-          $("body").html(
-            "<div class='text-center p-5 text-danger'>Gagal menghubungi server.</div>"
-          );
-          $("#loadingOverlay").addClass("fade-out"); // HILANGKAN LOADING
+          if (!isCached) {
+            $("body").html(
+              "<div class='text-center p-5 text-danger'>Gagal menghubungi server.</div>"
+            );
+            $("#loadingOverlay").addClass("fade-out");
+          } else {
+            console.warn("Gagal menghubungi server, tetap menggunakan data cache.");
+          }
         });
 
-      // ===== Fungsi tombol WA (TIDAK DIUBAH LOGIKANYA) =====
+      // ===== Fungsi tombol WA =====
       function aktifkanTombolWA() {
-        $("#paragraph").on("click", ".btn-custom-wa", async function (e) {
-          e.preventDefault();
+        $("#paragraph")
+          .off("click", ".btn-custom-wa")
+          .on("click", ".btn-custom-wa", async function (e) {
+            e.preventDefault();
 
-          const { value: formValues } = await Swal.fire({
-            title: 'Hubungi Kami',
-            html: `
+            const { value: formValues } = await Swal.fire({
+              title: "Hubungi Kami",
+              html: `
             <input id="swal-nama" class="swal2-input" placeholder="Nama">
             <textarea id="swal-isiPesan" class="swal2-textarea" placeholder="Isi Pesan"></textarea>
           `,
-            showCancelButton: true,
-            confirmButtonText: 'Kirim ke WhatsApp',
-            cancelButtonText: 'Batal',
-            confirmButtonColor: '#127720',
-            cancelButtonColor: '#d33',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            showLoaderOnConfirm: true,
-            preConfirm: async () => {
-              const nama = document.getElementById('swal-nama').value.trim();
-              const isiPesan = document.getElementById('swal-isiPesan').value.trim();
+              showCancelButton: true,
+              confirmButtonText: "Kirim ke WhatsApp",
+              cancelButtonText: "Batal",
+              confirmButtonColor: "#127720",
+              cancelButtonColor: "#d33",
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showLoaderOnConfirm: true,
+              preConfirm: async () => {
+                const nama = document.getElementById("swal-nama").value.trim();
+                const isiPesan = document.getElementById("swal-isiPesan").value.trim();
 
-              if (!nama || !isiPesan) {
-                Swal.showValidationMessage('Semua kolom wajib diisi ya!');
-                return false;
-              }
+                if (!nama || !isiPesan) {
+                  Swal.showValidationMessage("Semua kolom wajib diisi ya!");
+                  return false;
+                }
 
-              await new Promise(resolve => setTimeout(resolve, 1000));
-              return { nama, isiPesan };
-            },
-            showClass: { popup: 'animate__animated animate__zoomIn' },
-            hideClass: { popup: 'animate__animated animate__zoomOut' }
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+                return { nama, isiPesan };
+              },
+              showClass: { popup: "animate__animated animate__zoomIn" },
+              hideClass: { popup: "animate__animated animate__zoomOut" },
+            });
+
+            if (formValues) {
+              const ADMIN_WA = "6287713314496";
+              const pesan =
+                `Halo min, saya ${formValues.nama} minat posting iklan di @lokerkesehatanid\n\n` +
+                `${formValues.isiPesan}`;
+
+              window.location.href = `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(
+                pesan
+              )}`;
+            }
           });
-
-          if (formValues) {
-            const ADMIN_WA = "6287713314496";
-            const pesan =
-              `Halo min, saya ${formValues.nama} minat posting iklan di @lokerkesehatanid\n\n` +
-              `${formValues.isiPesan}`;
-
-            window.location.href =
-              `https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(pesan)}`;
-          }
-        });
       }
     });
   </script>
