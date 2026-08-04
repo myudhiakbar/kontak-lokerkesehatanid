@@ -298,7 +298,7 @@
         const buktiBase64 = await toBase64(buktiFile);
 
         const data = {
-          sheetName: "Sheet2",
+          sheetName: "Sheet1",
           invoice: invoiceField.value,
           produk: produkField.value,
           namaRek: namaRekField.value,
@@ -328,14 +328,6 @@
             hour: '2-digit',
             minute: '2-digit'
           }).replace(/\./g, ':') + ' WIB';
-
-          // const pesan = `Halo min, saya sudah transfer untuk iklan
-          // - No Invoice: ${data.invoice || '-'}
-          // - Produk: ${data.produk}
-          // - Tanggal Order: ${tanggalLengkap}
-          // - Nama Rek: ${data.namaRek}
-          // - Bank Pengirim: ${data.namaBank}
-          // - Bukti: ${fileUrl}`;
 
           const pesan = `Halo min, saya sudah transfer untuk iklan\n\n- No Invoice: ${data.invoice || '-'}\n- Produk: ${data.produk}\n- Tanggal Order: ${tanggalLengkap}\n- Nama Rek: ${data.namaRek}\n- Bank Pengirim: ${data.namaBank}\n- Bank Penerima: ${data.namaBank2}\n- Bukti: ${fileUrl}`;
 
@@ -456,7 +448,15 @@
 
     // Hapus file
     removeBtn.addEventListener("click", () => {
+      // Hapus file
       buktiInput.value = "";
+
+      // Reset preview
+      previewBox.style.display = "none";
+      previewName.textContent = "";
+      previewSize.textContent = "";
+
+      dzText.textContent = "Klik untuk upload atau seret file di sini";
 
       buktiInput.dispatchEvent(new Event("input"));
     });
