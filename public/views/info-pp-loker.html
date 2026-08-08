@@ -102,14 +102,15 @@
             const { value: formValues } = await Swal.fire({
               title: "Hubungi Kami",
               html: `
-            <input id="swal-nama" class="swal2-input" placeholder="Nama">
-            <textarea id="swal-isiPesan" class="swal2-textarea" placeholder="Isi Pesan"></textarea>
-          `,
+                    <input id="swal-nama" class="swal2-input" placeholder="Nama">
+                    <textarea id="swal-isiPesan" class="swal2-textarea" placeholder="Isi Pesan"></textarea>
+                  `,
               showCancelButton: true,
               confirmButtonText: "Kirim ke WhatsApp",
               cancelButtonText: "Batal",
               confirmButtonColor: "#127720",
               cancelButtonColor: "#d33",
+              reverseButtons: true,
               allowOutsideClick: false,
               allowEscapeKey: false,
               showLoaderOnConfirm: true,
