@@ -173,9 +173,10 @@ document.body.addEventListener("click", (e) => {
     if (inLinksContainer) {
         // Cek apakah sponsor terbuka
         const isSponsorOpened = tryOpenSponsor();
+        const isMobile = window.innerWidth <= 768;
         
         // Jika sponsor terbuka, cegah link utama terbuka
-        if (isSponsorOpened) {
+        if (isSponsorOpened && !isMobile) {
             e.preventDefault();
         }
     }
