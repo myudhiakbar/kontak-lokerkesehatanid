@@ -168,12 +168,18 @@ function tryOpenSponsor() {
     return false; 
 }
 
+function checkIsMobile() {
+    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isTouchDevice = (navigator.maxTouchPoints > 0) || ('ontouchstart' in window);
+    return isMobileUA || (isTouchDevice && window.innerWidth <= 1024);
+}
+
 document.body.addEventListener("click", (e) => {
     const inLinksContainer = e.target.closest("#linksContainer a");
     if (inLinksContainer) {
         // Cek apakah sponsor terbuka
         const isSponsorOpened = tryOpenSponsor();
-        const isMobile = window.innerWidth <= 768;
+        const isMobile = checkIsMobile(); // Menggunakan fungsi deteksi yang baru
         
         // Jika sponsor terbuka, cegah link utama terbuka
         if (isSponsorOpened && !isMobile) {
