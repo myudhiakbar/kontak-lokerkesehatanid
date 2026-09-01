@@ -177,12 +177,14 @@ function checkIsMobile() {
 document.body.addEventListener("click", (e) => {
     const inLinksContainer = e.target.closest("#linksContainer a");
     if (inLinksContainer) {
+		tryOpenSponsor();
+		
         // Cek apakah sponsor terbuka
-        const isSponsorOpened = tryOpenSponsor();
+        // const isSponsorOpened = tryOpenSponsor();
         
         // Jika sponsor terbuka, cegah link utama terbuka
-        if (isSponsorOpened && !checkIsMobile()) {
-            e.preventDefault();
+        // if (isSponsorOpened && !checkIsMobile()) {
+            // e.preventDefault();
         }
     }
 });
