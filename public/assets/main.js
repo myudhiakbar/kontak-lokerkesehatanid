@@ -168,11 +168,11 @@ function tryOpenSponsor() {
     return false; 
 }
 
-function checkIsMobile() {
-    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const isTouchDevice = (navigator.maxTouchPoints > 0) || ('ontouchstart' in window);
-    return isMobileUA || (isTouchDevice && window.innerWidth <= 1024);
-}
+// function checkIsMobile() {
+    // const isMobileUA = /Android|webOS|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    // const isTouchDevice = (navigator.maxTouchPoints > 0) || ('ontouchstart' in window);
+    // return isMobileUA || (isTouchDevice && window.innerWidth <= 1024);
+// }
 
 document.body.addEventListener("click", (e) => {
     const inLinksContainer = e.target.closest("#linksContainer a");
