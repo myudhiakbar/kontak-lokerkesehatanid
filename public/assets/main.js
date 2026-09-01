@@ -185,6 +185,6 @@ document.body.addEventListener("click", (e) => {
         // Jika sponsor terbuka, cegah link utama terbuka
         // if (isSponsorOpened && !checkIsMobile()) {
             // e.preventDefault();
-        }
+        //}
     }
 });
