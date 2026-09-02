@@ -62,80 +62,49 @@ toggleBtn.addEventListener("click", () => {
 const WEB_APP_URL =
 	"https://script.google.com/macros/s/AKfycbyqJ4u8maNKM97iqKl511Q9K8pY5_SnJQajA6Gtt7I6-RrZfq2ZT79zbmYsmYT8Sq28/exec?site=A";
 
-const CACHE_KEY = "gas_links_cache";
-
-function fetchLinksSWR() {
-    const container = document.getElementById("linksContainer");
-    let hasCachedData = false;
-
-    // 1. STALE: Cek dan tampilkan data dari cache terlebih dahulu
-    const cachedData = localStorage.getItem(CACHE_KEY);
-    if (cachedData) {
-        try {
-            const parsedData = JSON.parse(cachedData);
-            renderLinks(parsedData);
-            hasCachedData = true;
-        } catch (e) {
-            console.error("Gagal membaca cache:", e);
-        }
-    }
-
-    if (!hasCachedData) {
-        container.textContent = "Memuat data...";
-    }
-
-    // 2. REVALIDATE: Ambil data terbaru dari server di latar belakang
-    fetch(WEB_APP_URL)
-        .then((response) => response.json())
-        .then((data) => {
-            localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-            renderLinks(data);
-        })
-        .catch((err) => {
-            console.error("Error mengambil data dari server:", err);
-            
-            if (!hasCachedData) {
-                container.textContent = "Gagal memuat data.";
-            }
-        });
-}
-
-fetchLinksSWR();
+fetch(WEB_APP_URL)
+	.then((response) => response.json())
+	.then((data) => renderLinks(data))
+	.catch((err) => {
+		document.getElementById("linksContainer").textContent = "Gagal memuat data.";
+		console.error("Error:", err);
+	});
 
 function renderLinks(links) {
-    const container = document.getElementById("linksContainer");
-    container.innerHTML = "";
+	const container = document.getElementById("linksContainer");
+	container.innerHTML = "";
 
-    const validLinks = links.filter(
-        (link) =>
-            link.url && link.url.trim() !== "" && link.label && link.label.trim() !== "",
-    );
+	const validLinks = links.filter(
+		(link) =>
+			link.url && link.url.trim() !== "" && link.label && link.label.trim() !== "",
+	);
 
-    if (validLinks.length === 0) {
-        container.textContent = "Tidak ada data link untuk ditampilkan.";
-        return;
-    }
+	if (validLinks.length === 0) {
+		container.textContent = "Tidak ada data link untuk ditampilkan.";
+		return;
+	}
 
-    validLinks.forEach((link) => {
-        const a = document.createElement("a");
-        a.href = link.url;
-        a.className = `btn ${link.color || "btn-default"}`;
-        a.innerHTML = `
+	// Render hanya link yang valid
+	validLinks.forEach((link) => {
+		const a = document.createElement("a");
+		a.href = link.url;
+		a.className = `btn ${link.color || "btn-default"}`;
+		a.innerHTML = `
             ${link.icon ? `<i class="${link.icon}"></i>` : ""}
             ${link.label}
             `;
-        // Atribut a.target = "_blank" dihapus
-        container.appendChild(a);
-    });
+		a.target = "_blank";
+		container.appendChild(a);
+	});
 }
 
-// Daftar link sponsor
+// Daftar link sponsor (putar/acak)
 const sponsorUrls = [
-    "https://s.shopee.co.id/5VTdOhqb8i",
-    "https://s.shopee.co.id/9zw2l2lBhd",
-    "https://s.shopee.co.id/5fn3bNGtRA",
-    "https://s.shopee.co.id/7VEhmmeezQ",
-    "https://s.shopee.co.id/6ffanHfRZa",
+	"https://s.shopee.co.id/5VTdOhqb8i",
+	"https://s.shopee.co.id/9zw2l2lBhd",
+	"https://s.shopee.co.id/5fn3bNGtRA",
+	"https://s.shopee.co.id/7VEhmmeezQ",
+	"https://s.shopee.co.id/6ffanHfRZa",
 ];
 
 const cooldown = 12 * 60 * 60 * 1000; // 12 jam dalam milidetik
@@ -143,48 +112,28 @@ const INDEX_KEY = "sponsor-index";
 const LAST_OPEN_KEY = "directlink-last-time";
 
 function getNextSponsor() {
-    let index = Number(localStorage.getItem(INDEX_KEY) || 0);
-    const sponsor = sponsorUrls[index];
-    // increment & wrap around
-    index = (index + 1) % sponsorUrls.length;
-    localStorage.setItem(INDEX_KEY, index);
-    return sponsor;
+	let index = Number(localStorage.getItem(INDEX_KEY) || 0);
+	const sponsor = sponsorUrls[index];
+	// increment & wrap around
+	index = (index + 1) % sponsorUrls.length;
+	localStorage.setItem(INDEX_KEY, index);
+	return sponsor;
 }
 
 function tryOpenSponsor() {
-    const last = Number(localStorage.getItem(LAST_OPEN_KEY) || 0);
-    const now = Date.now();
-    
-    if (!last || now - last > cooldown) {
-        localStorage.setItem(LAST_OPEN_KEY, now);
-        const sponsorUrl = getNextSponsor();
-        window.open(sponsorUrl, "_blank");
-        
-        // Kembalikan true untuk menandakan sponsor berhasil dibuka
-        return true; 
-    }
-    
-    // Kembalikan false jika sedang dalam masa cooldown (sponsor tidak dibuka)
-    return false; 
+	const last = Number(localStorage.getItem(LAST_OPEN_KEY) || 0);
+	const now = Date.now();
+	if (!last || now - last > cooldown) {
+		localStorage.setItem(LAST_OPEN_KEY, now);
+		const sponsorUrl = getNextSponsor();
+		window.open(sponsorUrl, "_blank");
+	}
 }
 
-// function checkIsMobile() {
-    // const isMobileUA = /Android|webOS|iPhone|iPad|iPod|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    // const isTouchDevice = (navigator.maxTouchPoints > 0) || ('ontouchstart' in window);
-    // return isMobileUA || (isTouchDevice && window.innerWidth <= 1024);
-// }
-
+// === Tambahkan sponsor saat user klik link a href
 document.body.addEventListener("click", (e) => {
-    const inLinksContainer = e.target.closest("#linksContainer a");
-    if (inLinksContainer) {
+	const inLinksContainer = e.target.closest("#linksContainer a");
+	if (inLinksContainer) {
 		tryOpenSponsor();
-		
-        // Cek apakah sponsor terbuka
-        // const isSponsorOpened = tryOpenSponsor();
-        
-        // Jika sponsor terbuka, cegah link utama terbuka
-        // if (isSponsorOpened && !checkIsMobile()) {
-            // e.preventDefault();
-        //}
-    }
+	}
 });
